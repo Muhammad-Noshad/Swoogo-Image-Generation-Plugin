@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Swoogo Image Generation Plugin</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+      .share-event,
+      .share-event * {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: #ef6c37;
+        max-width: 740px;
+      }
+
+      .share-event h3 {
+        font-weight: 700;
+        font-size: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.75px;
+      }
+
+      .share-event p,
+      .share-event a {
+        font-size: 20px;
+      }
+
+      .share-event a {
+        text-decoration: none;
+        cursor: pointer;
+        transition: color 0.15s ease-in-out;
+      }
+
+      .share-event a:hover {
+        color: #ef6c37;
+      }
+
+      .share-event-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 10px;
+      }
+
+      .share-event-header > .icon {
+        cursor: pointer;
+      }
+
+      .share-event-content {
+        background-color: #ffdad4;
+        border-radius: 25px;
+        display: flex;
+        gap: 30px;
+        width: fit-content;
+        align-items: stretch;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .share-event-hover-content {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        font-weight: 800;
+        z-index: 1;
+        background: #00000099;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .share-event-content:has(.share-event-details:hover)
+        .share-event-hover-content,
+      .share-event-hover-content:hover {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .images-section {
+        display: flex;
+        gap: 40px;
+      }
+
+      .images-section > img {
+        cursor: pointer;
+      }
+
+      .divider-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        width: 40%;
+      }
+
+      .white-divider {
+        border-top: 1px solid #ffffff;
+        width: 100%;
+      }
+
+      .black-divider {
+        border-top: 1px solid #000000;
+        width: 100%;
+      }
+
+      .white {
+        color: #ffffff;
+      }
+      .black {
+        color: #000000;
+      }
+      .small {
+        font-size: 10px !important;
+      }
+      .bold {
+        font-weight: 800 !important;
+      }
+
+      .download-section {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #ef6c2799;
+        border-radius: 25px;
+      }
+
+      .share-event-details {
+        margin: 20px 0 20px 20px;
+      }
+
+      .share-event-name {
+        font-size: 40px;
+        line-height: 1.5;
+      }
+
+      .share-event-date {
+        text-transform: none;
+        font-weight: 500;
+      }
+
+      .share-event-images {
+        position: relative;
+      }
+
+      .share-event-background-image {
+        padding: 0 120px;
+        border-radius: 25px;
+        flex: 10;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+      }
+
+      .share-event-profile-image {
+        border-radius: 50%;
+        width: 70px;
+        height: 70px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        object-fit: cover;
+      }
+
+      .profile-hover-overlay {
+        position: absolute;
+        width: 70px;
+        height: 70px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: #00000099;
+        color: white;
+        font-size: 12px;
+        font-weight: 800;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        border-radius: 50%;
+        z-index: 1;
+      }
+
+      .no-image-placeholder {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background-color: #d9d9d9;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #666;
+        font-size: 12px;
+        font-weight: 800;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        gap: 5px;
+        padding: 10px;
+      }
+
+      .no-image-placeholder > p {
+        cursor: pointer;
+        transition: color 0.15s ease-in-out;
+      }
+
+      .no-image-placeholder > p:hover {
+        color: #ef6c37;
+      }
+
+      .event-share-participant-name {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        transform: translate(-50%, -75%);
+        width: 100%;
+        text-align: center;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="share-event">
+      <div class="share-event-header">
+        <h3>Share you are attending</h3>
+        <div class="share-actions">
+          <a href="">
+            <img src="./images/share-icon.svg" alt="share-icon" class="icon" />
+          </a>
+          <a href="" id="downloadBtn">
+            <img
+              src="./images/download-icon.svg"
+              alt="download-icon"
+              class="icon"
+            />
+          </a>
+        </div>
+      </div>
+      <div class="share-event-content" id="eventContent">
+        <div class="share-event-hover-content">
+          <div class="images-section">
+            <img src="./images/linkindin.svg" alt="linkedin-img" />
+            <img src="./images/instagram.svg" alt="instagram-img" />
+            <img src="./images/twitter.svg" alt="twitter-img" />
+            <img src="./images/whatsapp.svg" alt="whatsapp-img" />
+          </div>
+          <div class="divider-section">
+            <div class="white-divider"></div>
+            <p class="white small">or</p>
+            <div class="white-divider"></div>
+          </div>
+          <div class="download-section">
+            <img src="./images/small-download-icon.svg" alt="" />
+            <a class="white" id="downloadImageBtn">Download Image</a>
+          </div>
+        </div>
+        <div class="share-event-details">
+          <h3>
+            I am attending
+            <br />
+            <span class="share-event-name">
+              protect your breakthoughs by mastering biotech
+            </span>
+            <br />
+            <span class="share-event-date">Thursday, 10 April 2025</span>
+          </h3>
+        </div>
+        <div class="share-event-images">
+          <div class="overlay"></div>
+          <div class="share-event-background-image">
+            <div class="profile-hover-overlay">Remove</div>
+            <img class="share-event-profile-image" alt="profile-image" />
+            <h3 class="event-share-participant-name">keke smith</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+    <input
+      type="file"
+      id="profileImageInput"
+      accept="image/*"
+      style="display: none"
+    />
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        const profileImage = document.querySelector(
+          ".share-event-profile-image"
+        );
+        const profileContainer = document.querySelector(
+          ".share-event-background-image"
+        );
+        const fileInput = document.getElementById("profileImageInput");
+        const hoverOverlay = document.querySelector(".profile-hover-overlay");
+        const downloadBtn = document.getElementById("downloadBtn");
+        const downloadImageBtn = document.getElementById("downloadImageBtn");
+        const eventContent = document.getElementById("eventContent");
+        const backgroundImageUrl =
+          "https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D";
+
+        let hasProfileImage = false;
+
+        profileContainer.style.backgroundImage = `url('${backgroundImageUrl}')`;
+
+        function downloadEventAsImage() {
+          const hoverContent = document.querySelector(
+            ".share-event-hover-content"
+          );
+          const noImagePlaceholder = document.querySelector(
+            ".no-image-placeholder"
+          );
+          const overlay = document.querySelector(".overlay");
+
+          const originalHoverDisplay = hoverContent.style.display;
+          let originalImagePlaceholderDisplay;
+          let originalOverlayDisplay;
+
+          if (noImagePlaceholder) {
+            originalImagePlaceholderDisplay = noImagePlaceholder.style.display;
+            originalOverlayDisplay = overlay.style.display;
+
+            if (noImagePlaceholder.style.display !== "none") {
+              overlay.style.display = "none";
+            }
+
+            noImagePlaceholder.style.display = "none";
+          }
+
+          hoverContent.style.display = "none";
+
+          html2canvas(eventContent, {
+            allowTaint: true,
+            useCORS: true,
+            scale: 2,
+          }).then(function (canvas) {
+            const link = document.createElement("a");
+            link.download = hasProfileImage
+              ? "event-with-profile.png"
+              : "event-without-profile.png";
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+
+            hoverContent.style.display = originalHoverDisplay;
+
+            if (noImagePlaceholder) {
+              noImagePlaceholder.style.display =
+                originalImagePlaceholderDisplay;
+              overlay.style.display = originalOverlayDisplay;
+            }
+          });
+        }
+
+        downloadBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          downloadEventAsImage();
+        });
+
+        downloadImageBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          downloadEventAsImage();
+        });
+
+        function showUploadOption() {
+          profileImage.style.display = "none";
+          hoverOverlay.style.display = "none";
+          hasProfileImage = false;
+
+          const noImageDiv = document.createElement("div");
+          noImageDiv.className = "no-image-placeholder";
+          noImageDiv.innerHTML = `
+            <img src="./images/small-download-icon.svg">
+            <p class="black small profile-img-input bold">Upload image</p>
+            <p class="black-divider"></p>
+            <p class="black small without-image bold">Without image</p>
+          `;
+          profileContainer.appendChild(noImageDiv);
+
+          noImageDiv.addEventListener("click", function (e) {
+            if (e.target.classList.contains("profile-img-input")) {
+              fileInput.click();
+            } else if (e.target.classList.contains("without-image")) {
+              noImageDiv.remove();
+              document.querySelector(".overlay").remove();
+            }
+          });
+        }
+
+        fileInput.addEventListener("change", function (event) {
+          const file = event.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              profileImage.src = e.target.result;
+              profileImage.style.display = "block";
+              hasProfileImage = true;
+
+              const placeholder = document.querySelector(
+                ".no-image-placeholder"
+              );
+              if (placeholder) placeholder.remove();
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+        profileImage.addEventListener("mouseenter", function () {
+          if (profileImage.style.display === "block") {
+            hoverOverlay.style.display = "flex";
+          }
+        });
+
+        profileImage.addEventListener("mouseleave", function () {
+          hoverOverlay.style.display = "none";
+        });
+
+        hoverOverlay.addEventListener("click", showUploadOption);
+
+        showUploadOption();
+      });
+    </script>
+  </body>
+</html>
