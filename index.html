@@ -169,7 +169,6 @@
       .share-event-background-image {
         padding: 0 120px;
         border-radius: 25px;
-        flex: 10;
         height: 100%;
         background-size: cover;
         background-position: center;
@@ -177,24 +176,26 @@
 
       .share-event-profile-image {
         border-radius: 50%;
-        width: 70px;
-        height: 70px;
+        width: 150px;
+        height: 150px;
         position: absolute;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
         object-fit: cover;
+        cursor: pointer;
       }
 
       .profile-hover-overlay {
+        display: flex;
         position: absolute;
-        width: 70px;
-        height: 70px;
+        width: 150px;
+        height: 150px;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
         background: #00000099;
-        color: white;
+        color: #ffffff;
         font-size: 12px;
         font-weight: 800;
         display: none;
@@ -206,8 +207,8 @@
       }
 
       .no-image-placeholder {
-        width: 90px;
-        height: 90px;
+        width: 150px;
+        height: 150px;
         border-radius: 50%;
         background-color: #d9d9d9;
         display: flex;
@@ -237,7 +238,7 @@
       .event-share-participant-name {
         position: absolute;
         left: 50%;
-        top: 80%;
+        top: 90%;
         transform: translate(-50%, -75%);
         width: 100%;
         text-align: center;
@@ -294,7 +295,9 @@
         <div class="share-event-images">
           <div class="overlay"></div>
           <div class="share-event-background-image">
-            <div class="profile-hover-overlay">Remove</div>
+            <div class="profile-hover-overlay">
+              Remove
+            </div>
             <img class="share-event-profile-image" alt="profile-image" />
             <h3 class="event-share-participant-name">keke smith</h3>
           </div>
@@ -435,7 +438,23 @@
           }
         });
 
-        profileImage.addEventListener("mouseleave", function () {
+        hoverOverlay.addEventListener("mouseenter", function () {
+          if (profileImage.style.display === "block") {
+            hoverOverlay.style.display = "flex";
+          }
+        });
+
+        profileImage.addEventListener("mouseleave", function (e) {
+          if (!e.relatedTarget || e.relatedTarget !== hoverOverlay) {
+            setTimeout(() => {
+              if (!hoverOverlay.matches(":hover")) {
+                hoverOverlay.style.display = "none";
+              }
+            }, 50);
+          }
+        });
+
+        hoverOverlay.addEventListener("mouseleave", function () {
           hoverOverlay.style.display = "none";
         });
 
