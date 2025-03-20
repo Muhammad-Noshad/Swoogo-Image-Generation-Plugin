@@ -6,9 +6,23 @@
     <title>Swoogo Image Generation Plugin</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+      @font-face {
+        font-family: "RigShaded";
+        src: url("./fonts/rig-shaded/Rig_Shaded_Bold_Face.otf") format("opentype");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "Avenir";
+        src: url("./fonts/avenir-font/AvenirLTStd-Black.otf") format("opentype");
+        font-weight: normal;
+        font-style: normal;
+      }
+
       .share-event,
       .share-event * {
-        font-family: Arial, sans-serif;
+        font-family: "Avenir", sans-serif;
         margin: 0;
         padding: 0;
         color: #ef6c37;
@@ -16,6 +30,7 @@
       }
 
       .share-event h3 {
+        font-family: "RigShaded", sans-serif;
         font-weight: 700;
         font-size: 20px;
         text-transform: uppercase;
@@ -24,7 +39,7 @@
 
       .share-event p,
       .share-event a {
-        font-size: 20px;
+        font-size: 16px;
       }
 
       .share-event a {
@@ -81,6 +96,10 @@
         gap: 20px;
       }
 
+      .share-event-hover-content > .download-section > a {
+        font-size: 20px;
+      }
+
       .share-event-content:has(.share-event-details:hover)
         .share-event-hover-content,
       .share-event-hover-content:hover {
@@ -122,7 +141,7 @@
         color: #000000;
       }
       .small {
-        font-size: 10px !important;
+        font-size: 12px !important;
       }
       .bold {
         font-weight: 800 !important;
@@ -195,15 +214,17 @@
         top: 50%;
         transform: translate(-50%, -50%);
         background: #00000099;
-        color: #ffffff;
-        font-size: 12px;
-        font-weight: 800;
         display: none;
         justify-content: center;
         align-items: center;
         cursor: pointer;
         border-radius: 50%;
         z-index: 1;
+      }
+
+      .profile-hover-overlay > p {
+        color: #ffffff;
+        font-weight: 800;
       }
 
       .no-image-placeholder {
@@ -216,8 +237,6 @@
         justify-content: center;
         align-items: center;
         color: #666;
-        font-size: 12px;
-        font-weight: 800;
         position: absolute;
         left: 50%;
         top: 50%;
@@ -296,7 +315,7 @@
           <div class="overlay"></div>
           <div class="share-event-background-image">
             <div class="profile-hover-overlay">
-              Remove
+              <p>Remove</p>
             </div>
             <img class="share-event-profile-image" alt="profile-image" />
             <h3 class="event-share-participant-name">keke smith</h3>
@@ -397,7 +416,7 @@
           const noImageDiv = document.createElement("div");
           noImageDiv.className = "no-image-placeholder";
           noImageDiv.innerHTML = `
-            <img src="./images/small-download-icon.svg">
+            <img src="./images/upload-icon.svg">
             <p class="black small profile-img-input bold">Upload image</p>
             <p class="black-divider"></p>
             <p class="black small without-image bold">Without image</p>
