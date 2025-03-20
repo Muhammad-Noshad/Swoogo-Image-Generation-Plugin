@@ -8,7 +8,8 @@
     <style>
       @font-face {
         font-family: "RigShaded";
-        src: url("./fonts/rig-shaded/Rig_Shaded_Bold_Face.otf") format("opentype");
+        src: url("./fonts/rig-shaded/Rig_Shaded_Bold_Face.otf")
+          format("opentype");
         font-weight: normal;
         font-style: normal;
       }
@@ -72,10 +73,6 @@
         width: fit-content;
         position: relative;
         flex-wrap: wrap-reverse;
-      }
-
-      .share-event-content > * {
-        flex: 1;
       }
 
       .share-event-hover-content {
@@ -166,7 +163,7 @@
       }
 
       .share-event-details {
-        flex: 1;
+        flex: 2;
         margin: 20px 0 20px 20px;
       }
 
@@ -181,6 +178,7 @@
       }
 
       .share-event-images {
+        flex: 1;
         position: relative;
         min-height: 275px;
       }
@@ -304,11 +302,9 @@
           <h3>
             I am attending
             <br />
-            <span class="share-event-name">
-              protect your breakthoughs by mastering biotech
-            </span>
+            <span class="share-event-name"> loading... </span>
             <br />
-            <span class="share-event-date">Thursday, 10 April 2025</span>
+            <span class="share-event-date">Loading...</span>
           </h3>
         </div>
         <div class="share-event-images">
@@ -318,7 +314,7 @@
               <p>Remove</p>
             </div>
             <img class="share-event-profile-image" alt="profile-image" />
-            <h3 class="event-share-participant-name">keke smith</h3>
+            <h3 class="event-share-participant-name">loading...</h3>
           </div>
         </div>
       </div>
@@ -343,12 +339,8 @@
         const downloadBtn = document.getElementById("downloadBtn");
         const downloadImageBtn = document.getElementById("downloadImageBtn");
         const eventContent = document.getElementById("eventContent");
-        const backgroundImageUrl =
-          "https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D";
 
         let hasProfileImage = false;
-
-        profileContainer.style.backgroundImage = `url('${backgroundImageUrl}')`;
 
         function downloadEventAsImage() {
           const hoverContent = document.querySelector(
@@ -480,6 +472,177 @@
         hoverOverlay.addEventListener("click", showUploadOption);
 
         showUploadOption();
+
+        const API_URL = "http://localhost:3000";
+        const token = await getToken();
+        const eventId = 244694;
+        const event = await getEventDetailsById(eventId);
+        const registrants = await getRegistrantsByEventId(eventId);
+        // const registrantId = 50146702;
+        // const [registrant] = registrants.filter(
+        //   (val) => val.id === registrantId
+        // );
+        const registrant = registrants[0];
+        const registrantDetails = await getRegistrantDetailsById(registrant.id);
+        const registrantProfilePicture = await getObjectAssetsByObjectId(
+          "registrant",
+          registrant.id,
+          "profile_picture"
+        );
+
+        const shareEventName = document.querySelector(".share-event-name");
+        shareEventName.textContent = event.name;
+
+        const shareEventDate = document.querySelector(".share-event-date");
+        shareEventDate.textContent = formatDate(event.start_date);
+
+        const backgroundImageUrl = event.c_96753;
+        profileContainer.style.backgroundImage = `url('${backgroundImageUrl}')`;
+
+        const participantName = document.querySelector(
+          ".event-share-participant-name"
+        );
+        participantName.textContent = `${registrantDetails.first_name} ${registrantDetails.last_name}`;
+
+        if (registrantProfilePicture) {
+          profileImage.src = registrantProfilePicture;
+          profileImage.style.display = "block";
+          hasProfileImage = true;
+          const placeholder = document.querySelector(".no-image-placeholder");
+          if (placeholder) placeholder.remove();
+        } else {
+          hasProfileImage = false;
+          const noImageDiv = document.createElement("div");
+          noImageDiv.className = "no-image-placeholder";
+          noImageDiv.innerHTML = `
+            <img src="./images/upload-icon.svg">
+            <p class="black small profile-img-input bold">Upload image</p>
+            <p class="black-divider"></p>
+            <p class="black small without-image bold">Without image</p>
+        `;
+          profileContainer.appendChild(noImageDiv);
+        }
+
+        function formatDate(inputDate) {
+          const date = new Date(inputDate);
+          const options = {
+            weekday: "long",
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          };
+          return date.toLocaleDateString("en-US", options);
+        }
+
+        async function getToken() {
+          try {
+            const response = await fetch(`${API_URL}/get-token`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data?.access_token;
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        }
+
+        async function getEventDetailsById(eventId) {
+          try {
+            const response = await fetch(`${API_URL}/event/${eventId}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data;
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        }
+
+        async function getRegistrantsByEventId(eventId) {
+          try {
+            const response = await fetch(`${API_URL}/registrants/${eventId}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data?.items;
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        }
+
+        async function getRegistrantDetailsById(registrantId) {
+          try {
+            const response = await fetch(
+              `${API_URL}/registrant/${registrantId}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data;
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        }
+
+        async function getObjectAssetsByObjectId(object, objectId, asset) {
+          try {
+            const response = await fetch(
+              `${API_URL}/image/${object}/${objectId}/${asset}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data;
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        }
       });
     </script>
   </body>
