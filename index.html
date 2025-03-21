@@ -328,321 +328,334 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", async function () {
-        const profileImage = document.querySelector(
-          ".share-event-profile-image"
-        );
-        const profileContainer = document.querySelector(
-          ".share-event-background-image"
-        );
-        const fileInput = document.getElementById("profileImageInput");
-        const hoverOverlay = document.querySelector(".profile-hover-overlay");
-        const downloadBtn = document.getElementById("downloadBtn");
-        const downloadImageBtn = document.getElementById("downloadImageBtn");
-        const eventContent = document.getElementById("eventContent");
+        const elements = {
+          profileImage: document.querySelector(".share-event-profile-image"),
+          profileContainer: document.querySelector(
+            ".share-event-background-image"
+          ),
+          fileInput: document.getElementById("profileImageInput"),
+          hoverOverlay: document.querySelector(".profile-hover-overlay"),
+          downloadBtn: document.getElementById("downloadBtn"),
+          downloadImageBtn: document.getElementById("downloadImageBtn"),
+          eventContent: document.getElementById("eventContent"),
+          shareEventName: document.querySelector(".share-event-name"),
+          shareEventDate: document.querySelector(".share-event-date"),
+          participantName: document.querySelector(
+            ".event-share-participant-name"
+          ),
+        };
 
-        let hasProfileImage = false;
+        const config = {
+          API_URL: "https://swoogo-image-generation-plugin-backend-euif.vercel.app",
+          eventId: 244694,
+        };
 
-        function downloadEventAsImage() {
-          const hoverContent = document.querySelector(
-            ".share-event-hover-content"
-          );
-          const noImagePlaceholder = document.querySelector(
-            ".no-image-placeholder"
-          );
-          const overlay = document.querySelector(".overlay");
+        let state = {
+          hasProfileImage: false,
+          token: null,
+          isLoading: true,
+        };
 
-          const originalHoverDisplay = hoverContent.style.display;
-          let originalImagePlaceholderDisplay;
-          let originalOverlayDisplay;
-
-          if (noImagePlaceholder) {
-            originalImagePlaceholderDisplay = noImagePlaceholder.style.display;
-            originalOverlayDisplay = overlay.style.display;
-
-            if (noImagePlaceholder.style.display !== "none") {
-              overlay.style.display = "none";
-            }
-
-            noImagePlaceholder.style.display = "none";
-          }
-
-          hoverContent.style.display = "none";
-
-          html2canvas(eventContent, {
-            allowTaint: true,
-            useCORS: true,
-            scale: 2,
-          }).then(function (canvas) {
-            const link = document.createElement("a");
-            link.download = hasProfileImage
-              ? "event-with-profile.png"
-              : "event-without-profile.png";
-            link.href = canvas.toDataURL("image/png");
-            link.click();
-
-            hoverContent.style.display = originalHoverDisplay;
-
-            if (noImagePlaceholder) {
-              noImagePlaceholder.style.display =
-                originalImagePlaceholderDisplay;
-              overlay.style.display = originalOverlayDisplay;
-            }
-          });
-        }
-
-        downloadBtn.addEventListener("click", function (e) {
-          e.preventDefault();
-          downloadEventAsImage();
-        });
-
-        downloadImageBtn.addEventListener("click", function (e) {
-          e.preventDefault();
-          downloadEventAsImage();
-        });
-
-        function showUploadOption() {
-          profileImage.style.display = "none";
-          hoverOverlay.style.display = "none";
-          hasProfileImage = false;
-
-          const noImageDiv = document.createElement("div");
-          noImageDiv.className = "no-image-placeholder";
-          noImageDiv.innerHTML = `
-            <img src="./images/upload-icon.svg">
-            <p class="black small profile-img-input bold">Upload image</p>
-            <p class="black-divider"></p>
-            <p class="black small without-image bold">Without image</p>
-          `;
-          profileContainer.appendChild(noImageDiv);
-
-          noImageDiv.addEventListener("click", function (e) {
-            if (e.target.classList.contains("profile-img-input")) {
-              fileInput.click();
-            } else if (e.target.classList.contains("without-image")) {
-              noImageDiv.remove();
-              document.querySelector(".overlay").remove();
-            }
-          });
-        }
-
-        fileInput.addEventListener("change", function (event) {
-          const file = event.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-              profileImage.src = e.target.result;
-              profileImage.style.display = "block";
-              hasProfileImage = true;
-
-              const placeholder = document.querySelector(
-                ".no-image-placeholder"
-              );
-              if (placeholder) placeholder.remove();
+        const helpers = {
+          formatDate(inputDate) {
+            const date = new Date(inputDate);
+            const options = {
+              weekday: "long",
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
             };
-            reader.readAsDataURL(file);
-          }
-        });
+            return date.toLocaleDateString("en-US", options);
+          },
 
-        profileImage.addEventListener("mouseenter", function () {
-          if (profileImage.style.display === "block") {
-            hoverOverlay.style.display = "flex";
-          }
-        });
+          createOverlay() {
+            const overlay = document.createElement("div");
+            overlay.className = "overlay";
+            return overlay;
+          },
+        };
 
-        hoverOverlay.addEventListener("mouseenter", function () {
-          if (profileImage.style.display === "block") {
-            hoverOverlay.style.display = "flex";
-          }
-        });
+        const ui = {
+          showLoadingState() {
+            elements.profileImage.style.display = "none";
+            elements.hoverOverlay.style.display = "none";
 
-        profileImage.addEventListener("mouseleave", function (e) {
-          if (!e.relatedTarget || e.relatedTarget !== hoverOverlay) {
-            setTimeout(() => {
-              if (!hoverOverlay.matches(":hover")) {
-                hoverOverlay.style.display = "none";
+            const existingPlaceholder = document.querySelector(
+              ".no-image-placeholder"
+            );
+            if (existingPlaceholder) {
+              existingPlaceholder.remove();
+            }
+
+            const loadingDiv = document.createElement("div");
+            loadingDiv.className = "no-image-placeholder loading-state";
+            loadingDiv.innerHTML = `
+        <div class="loading-spinner"></div>
+        <p class="black small bold">Loading profile...</p>
+      `;
+            elements.profileContainer.appendChild(loadingDiv);
+          },
+
+          showUploadOption() {
+            elements.profileImage.style.display = "none";
+            elements.hoverOverlay.style.display = "none";
+            state.hasProfileImage = false;
+
+            const existingPlaceholder = document.querySelector(
+              ".no-image-placeholder"
+            );
+            if (existingPlaceholder) {
+              existingPlaceholder.remove();
+            }
+
+            const noImageDiv = document.createElement("div");
+            noImageDiv.className = "no-image-placeholder";
+            noImageDiv.innerHTML = `
+        <img src="./images/upload-icon.svg">
+        <p class="black small profile-img-input bold">Upload image</p>
+        <p class="black-divider"></p>
+        <p class="black small without-image bold">Without image</p>
+      `;
+            elements.profileContainer.appendChild(noImageDiv);
+
+            noImageDiv.addEventListener("click", function (e) {
+              const target = e.target;
+
+              if (
+                target.classList.contains("profile-img-input") ||
+                target.closest(".profile-img-input")
+              ) {
+                elements.fileInput.click();
+              } else if (
+                target.classList.contains("without-image") ||
+                target.closest(".without-image")
+              ) {
+                noImageDiv.remove();
+                const overlay = document.querySelector(".overlay");
+                if (overlay) overlay.remove();
               }
-            }, 50);
-          }
-        });
-
-        hoverOverlay.addEventListener("mouseleave", function () {
-          hoverOverlay.style.display = "none";
-        });
-
-        hoverOverlay.addEventListener("click", showUploadOption);
-
-        showUploadOption();
-
-        const API_URL = "https://swoogo-image-generation-plugin-backend.vercel.app";
-        const token = await getToken();
-        const eventId = 244694;
-        const event = await getEventDetailsById(eventId);
-        const registrants = await getRegistrantsByEventId(eventId);
-        // const registrantId = 50146702;
-        // const [registrant] = registrants.filter(
-        //   (val) => val.id === registrantId
-        // );
-        const registrant = registrants[0];
-        const registrantDetails = await getRegistrantDetailsById(registrant.id);
-        const registrantProfilePicture = await getObjectAssetsByObjectId(
-          "registrant",
-          registrant.id,
-          "profile_picture"
-        );
-
-        const shareEventName = document.querySelector(".share-event-name");
-        shareEventName.textContent = event.name;
-
-        const shareEventDate = document.querySelector(".share-event-date");
-        shareEventDate.textContent = formatDate(event.start_date);
-
-        const backgroundImageUrl = event.c_96753;
-        profileContainer.style.backgroundImage = `url('${backgroundImageUrl}')`;
-
-        const participantName = document.querySelector(
-          ".event-share-participant-name"
-        );
-        participantName.textContent = `${registrantDetails.first_name} ${registrantDetails.last_name}`;
-
-        if (registrantProfilePicture) {
-          profileImage.src = registrantProfilePicture;
-          profileImage.style.display = "block";
-          hasProfileImage = true;
-          const placeholder = document.querySelector(".no-image-placeholder");
-          if (placeholder) placeholder.remove();
-        } else {
-          hasProfileImage = false;
-          const noImageDiv = document.createElement("div");
-          noImageDiv.className = "no-image-placeholder";
-          noImageDiv.innerHTML = `
-            <img src="./images/upload-icon.svg">
-            <p class="black small profile-img-input bold">Upload image</p>
-            <p class="black-divider"></p>
-            <p class="black small without-image bold">Without image</p>
-        `;
-          profileContainer.appendChild(noImageDiv);
-        }
-
-        function formatDate(inputDate) {
-          const date = new Date(inputDate);
-          const options = {
-            weekday: "long",
-            day: "2-digit",
-            month: "long",
-            year: "numeric",
-          };
-          return date.toLocaleDateString("en-US", options);
-        }
-
-        async function getToken() {
-          try {
-            const response = await fetch(`${API_URL}/get-token`, {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
             });
+          },
 
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
+          setProfileImage(imageUrl) {
+            elements.profileImage.src = imageUrl;
+            elements.profileImage.style.display = "block";
+            state.hasProfileImage = true;
+
+            const placeholder = document.querySelector(".no-image-placeholder");
+            if (placeholder) placeholder.remove();
+          },
+
+          downloadEventAsImage() {
+            const hoverContent = document.querySelector(
+              ".share-event-hover-content"
+            );
+            const noImagePlaceholder = document.querySelector(
+              ".no-image-placeholder"
+            );
+            const overlay = document.querySelector(".overlay");
+
+            const originalStates = {
+              hoverContent: hoverContent.style.display,
+              noImagePlaceholder: noImagePlaceholder
+                ? noImagePlaceholder.style.display
+                : null,
+              overlay: overlay ? overlay.style.display : null,
+            };
+
+            hoverContent.style.display = "none";
+            if (noImagePlaceholder) {
+              noImagePlaceholder.style.display = "none";
+              if (overlay) overlay.style.display = "none";
             }
 
-            const data = await response.json();
-            return data?.access_token;
-          } catch (error) {
-            console.error("Error fetching data:", error);
-          }
-        }
+            html2canvas(elements.eventContent, {
+              allowTaint: true,
+              useCORS: true,
+              scale: 2,
+            }).then(function (canvas) {
+              const link = document.createElement("a");
+              link.download = state.hasProfileImage
+                ? "event-with-profile.png"
+                : "event-without-profile.png";
+              link.href = canvas.toDataURL("image/png");
+              link.click();
 
-        async function getEventDetailsById(eventId) {
-          try {
-            const response = await fetch(`${API_URL}/event/${eventId}`, {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
+              hoverContent.style.display = originalStates.hoverContent;
+              if (noImagePlaceholder) {
+                noImagePlaceholder.style.display =
+                  originalStates.noImagePlaceholder;
+                if (overlay) overlay.style.display = originalStates.overlay;
+              }
             });
+          },
 
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
+          setupEventData(event, registrantDetails, registrantProfilePicture) {
+            elements.shareEventName.textContent = event.name;
+            elements.shareEventDate.textContent = helpers.formatDate(
+              event.start_date
+            );
+            elements.profileContainer.style.backgroundImage = `url('${event.c_96753}')`;
+
+            elements.participantName.textContent = `${registrantDetails.first_name} ${registrantDetails.last_name}`;
+
+            if (registrantProfilePicture) {
+              ui.setProfileImage(registrantProfilePicture);
+            } else {
+              ui.showUploadOption();
             }
 
-            const data = await response.json();
-            return data;
-          } catch (error) {
-            console.error("Error fetching data:", error);
-          }
-        }
+            state.isLoading = false;
+          },
+        };
 
-        async function getRegistrantsByEventId(eventId) {
-          try {
-            const response = await fetch(`${API_URL}/registrants/${eventId}`, {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            });
+        const api = {
+          async getToken() {
+            try {
+              const response = await fetch(`${config.API_URL}/get-token`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+              });
 
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
+              if (!response.ok)
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              const data = await response.json();
+              return data?.access_token;
+            } catch (error) {
+              console.error("Error fetching token:", error);
+              return null;
             }
+          },
 
-            const data = await response.json();
-            return data?.items;
-          } catch (error) {
-            console.error("Error fetching data:", error);
-          }
-        }
-
-        async function getRegistrantDetailsById(registrantId) {
-          try {
-            const response = await fetch(
-              `${API_URL}/registrant/${registrantId}`,
-              {
+          async fetchWithAuth(endpoint) {
+            try {
+              const response = await fetch(`${config.API_URL}${endpoint}`, {
                 method: "GET",
                 headers: {
                   "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
+                  Authorization: `Bearer ${state.token}`,
                 },
-              }
-            );
+              });
 
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
+              if (!response.ok)
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              return await response.json();
+            } catch (error) {
+              console.error(`Error fetching ${endpoint}:`, error);
+              return null;
             }
+          },
 
-            const data = await response.json();
-            return data;
-          } catch (error) {
-            console.error("Error fetching data:", error);
-          }
+          getEventDetailsById(eventId) {
+            return api.fetchWithAuth(`/event/${eventId}`);
+          },
+
+          getRegistrantsByEventId(eventId) {
+            return api
+              .fetchWithAuth(`/registrants/${eventId}`)
+              .then((data) => data?.items || []);
+          },
+
+          getRegistrantDetailsById(registrantId) {
+            return api.fetchWithAuth(`/registrant/${registrantId}`);
+          },
+
+          getObjectAssetsByObjectId(object, objectId, asset) {
+            return api.fetchWithAuth(`/image/${object}/${objectId}/${asset}`);
+          },
+        };
+
+        function setupEventListeners() {
+          elements.downloadBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            ui.downloadEventAsImage();
+          });
+
+          elements.downloadImageBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            ui.downloadEventAsImage();
+          });
+
+          elements.fileInput.addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (e) => ui.setProfileImage(e.target.result);
+              reader.readAsDataURL(file);
+            }
+          });
+
+          elements.profileImage.addEventListener("mouseenter", () => {
+            if (elements.profileImage.style.display === "block") {
+              elements.hoverOverlay.style.display = "flex";
+            }
+          });
+
+          elements.hoverOverlay.addEventListener("mouseenter", () => {
+            if (elements.profileImage.style.display === "block") {
+              elements.hoverOverlay.style.display = "flex";
+            }
+          });
+
+          elements.profileImage.addEventListener("mouseleave", (e) => {
+            if (!e.relatedTarget || e.relatedTarget !== elements.hoverOverlay) {
+              setTimeout(() => {
+                if (!elements.hoverOverlay.matches(":hover")) {
+                  elements.hoverOverlay.style.display = "none";
+                }
+              }, 50);
+            }
+          });
+
+          elements.hoverOverlay.addEventListener("mouseleave", () => {
+            elements.hoverOverlay.style.display = "none";
+          });
+
+          elements.hoverOverlay.addEventListener("click", ui.showUploadOption);
         }
 
-        async function getObjectAssetsByObjectId(object, objectId, asset) {
-          try {
-            const response = await fetch(
-              `${API_URL}/image/${object}/${objectId}/${asset}`,
-              {
-                method: "GET",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
+        async function init() {
+          setupEventListeners();
 
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+          ui.showLoadingState();
 
-            const data = await response.json();
-            return data;
-          } catch (error) {
-            console.error("Error fetching data:", error);
+          state.token = await api.getToken();
+          if (!state.token) {
+            ui.showUploadOption();
+            return;
           }
+
+          const event = await api.getEventDetailsById(config.eventId);
+          if (!event) {
+            ui.showUploadOption();
+            return;
+          }
+
+          const registrants = await api.getRegistrantsByEventId(config.eventId);
+          if (!registrants.length) {
+            ui.showUploadOption();
+            return;
+          }
+
+          const registrant = registrants[0];
+          const registrantDetails = await api.getRegistrantDetailsById(
+            registrant.id
+          );
+          if (!registrantDetails) {
+            ui.showUploadOption();
+            return;
+          }
+
+          const registrantProfilePicture = await api.getObjectAssetsByObjectId(
+            "registrant",
+            registrant.id,
+            "profile_picture"
+          );
+
+          ui.setupEventData(event, registrantDetails, registrantProfilePicture);
         }
+
+        init();
       });
     </script>
   </body>
