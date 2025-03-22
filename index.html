@@ -347,6 +347,7 @@
           participantName: document.querySelector(
             ".event-share-participant-name"
           ),
+          shareIcon: document.querySelector(".share-actions a:first-child"),
         };
 
         const config = {
@@ -376,6 +377,149 @@
             const overlay = document.createElement("div");
             overlay.className = "overlay";
             return overlay;
+          },
+
+          shareToSocialMedia(platform) {
+            const eventName = elements.shareEventName.textContent.trim();
+
+            const shareText = `Just registered for ${eventName} at the @Health & innovationdistrict. Will I see you there?`;
+
+            const instructions =
+              "1. The share text will be copied to your clipboard\n" +
+              "2. An image will be downloaded to your device\n" +
+              `3. You'll need to manually open ${
+                platform.charAt(0).toUpperCase() + platform.slice(1)
+              } and create a new post with the downloaded image and copied text`;
+
+            const confirmMessage = `You're about to share to ${
+              platform.charAt(0).toUpperCase() + platform.slice(1)
+            }:\n\n${instructions}\n\nWould you like to continue?`;
+
+            if (confirm(confirmMessage)) {
+              const hoverContent = document.querySelector(
+                ".share-event-hover-content"
+              );
+              const noImagePlaceholder = document.querySelector(
+                ".no-image-placeholder"
+              );
+              const overlay = document.querySelector(".overlay");
+              const profileImage = document.querySelector(
+                ".share-event-profile-image"
+              );
+
+              const originalStates = {
+                hoverContent: hoverContent ? hoverContent.style.display : null,
+                noImagePlaceholder: noImagePlaceholder
+                  ? noImagePlaceholder.style.display
+                  : null,
+                overlay: overlay ? overlay.style.display : null,
+              };
+
+              let profileImageParent = null;
+              let profileImageNextSibling = null;
+              let removedProfileImage = false;
+
+              if (hoverContent) hoverContent.style.display = "none";
+              if (noImagePlaceholder) noImagePlaceholder.style.display = "none";
+              if (overlay) overlay.style.display = "none";
+
+              if (profileImage) {
+                const src = profileImage.getAttribute("src");
+                if (!src || src.trim() === "") {
+                  profileImageParent = profileImage.parentNode;
+                  profileImageNextSibling = profileImage.nextSibling;
+                  profileImageParent.removeChild(profileImage);
+                  removedProfileImage = true;
+                }
+              }
+
+              domtoimage
+                .toPng(elements.eventContent, { quality: 1 })
+                .then(function (dataUrl) {
+                  if (hoverContent)
+                    hoverContent.style.display = originalStates.hoverContent;
+                  if (noImagePlaceholder)
+                    noImagePlaceholder.style.display =
+                      originalStates.noImagePlaceholder;
+                  if (overlay) overlay.style.display = originalStates.overlay;
+
+                  if (removedProfileImage && profileImageParent) {
+                    if (profileImageNextSibling) {
+                      profileImageParent.insertBefore(
+                        profileImage,
+                        profileImageNextSibling
+                      );
+                    } else {
+                      profileImageParent.appendChild(profileImage);
+                    }
+                  }
+
+                  navigator.clipboard
+                    .writeText(shareText)
+                    .then(() => {
+                      console.log("Share text copied to clipboard");
+                    })
+                    .catch((err) => {
+                      console.error("Could not copy text: ", err);
+                      alert(
+                        "Could not copy text to clipboard. Please copy this text manually:\n\n" +
+                          shareText
+                      );
+                    });
+
+                  const link = document.createElement("a");
+                  link.download = `${platform}-share-image.png`;
+                  link.href = dataUrl;
+                  link.click();
+
+                  alert(
+                    `The image has been downloaded to your device and text copied to your clipboard.\n\nPlease open ${platform} manually and create a new post with the downloaded image and paste the copied text.`
+                  );
+                })
+                .catch(function (error) {
+                  console.error("Error generating image for sharing:", error);
+
+                  if (hoverContent)
+                    hoverContent.style.display = originalStates.hoverContent;
+                  if (noImagePlaceholder)
+                    noImagePlaceholder.style.display =
+                      originalStates.noImagePlaceholder;
+                  if (overlay) overlay.style.display = originalStates.overlay;
+
+                  if (removedProfileImage && profileImageParent) {
+                    if (profileImageNextSibling) {
+                      profileImageParent.insertBefore(
+                        profileImage,
+                        profileImageNextSibling
+                      );
+                    } else {
+                      profileImageParent.appendChild(profileImage);
+                    }
+                  }
+
+                  alert(
+                    "Could not generate the image for sharing. Would you still like to share without an image?"
+                  );
+
+                  if (
+                    confirm(
+                      "Would you like to continue sharing without the image?"
+                    )
+                  ) {
+                    navigator.clipboard.writeText(shareText).catch((err) => {
+                      console.error("Could not copy text: ", err);
+                      alert(
+                        "Could not copy text to clipboard. Please copy this text manually:\n\n" +
+                          shareText
+                      );
+                    });
+
+                    alert(
+                      `Please open ${platform} manually and paste the copied text.`
+                    );
+                  }
+                });
+            }
           },
         };
 
@@ -663,11 +807,39 @@
           });
 
           elements.hoverOverlay.addEventListener("click", ui.showUploadOption);
+
+          const socialIcons = {
+            linkedin: document.querySelector(
+              '.images-section img[alt="linkedin-img"]'
+            ),
+            twitter: document.querySelector(
+              '.images-section img[alt="twitter-img"]'
+            ),
+            instagram: document.querySelector(
+              '.images-section img[alt="instagram-img"]'
+            ),
+            whatsapp: document.querySelector(
+              '.images-section img[alt="whatsapp-img"]'
+            ),
+          };
+
+          Object.entries(socialIcons).forEach(([platform, icon]) => {
+            if (icon) {
+              icon.addEventListener("click", (e) => {
+                e.preventDefault();
+                helpers.shareToSocialMedia(platform);
+              });
+            }
+          });
+
+          elements.shareIcon.addEventListener("click", (e) => {
+            e.preventDefault();
+            helpers.shareToSocialMedia("linkedin");
+          });
         }
 
         async function init() {
           setupEventListeners();
-
           ui.showLoadingState();
 
           state.token = await api.getToken();
