@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Swoogo Image Generation Plugin</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <style>
       @font-face {
         font-family: "RigShaded";
@@ -313,7 +313,11 @@
             <div class="profile-hover-overlay">
               <p>Remove</p>
             </div>
-            <img class="share-event-profile-image" alt="profile-image" />
+            <img
+              class="share-event-profile-image"
+              alt="profile-image"
+              crossorigin="anonymous"
+            />
             <h3 class="event-share-participant-name">loading...</h3>
           </div>
         </div>
@@ -454,6 +458,9 @@
               ".no-image-placeholder"
             );
             const overlay = document.querySelector(".overlay");
+            const profileImage = document.querySelector(
+              ".share-event-profile-image"
+            );
 
             const originalStates = {
               hoverContent: hoverContent.style.display,
@@ -463,31 +470,75 @@
               overlay: overlay ? overlay.style.display : null,
             };
 
+            let profileImageParent = null;
+            let profileImageNextSibling = null;
+            let removedProfileImage = false;
+
             hoverContent.style.display = "none";
-            if (noImagePlaceholder) {
-              noImagePlaceholder.style.display = "none";
-              if (overlay) overlay.style.display = "none";
+            if (noImagePlaceholder) noImagePlaceholder.style.display = "none";
+            if (overlay) overlay.style.display = "none";
+
+            if (profileImage) {
+              const src = profileImage.getAttribute("src");
+              if (!src || src.trim() === "") {
+                profileImageParent = profileImage.parentNode;
+                profileImageNextSibling = profileImage.nextSibling;
+                profileImageParent.removeChild(profileImage);
+                removedProfileImage = true;
+              }
             }
 
-            html2canvas(elements.eventContent, {
-              allowTaint: true,
-              useCORS: true,
-              scale: 2,
-            }).then(function (canvas) {
-              const link = document.createElement("a");
-              link.download = state.hasProfileImage
-                ? "event-with-profile.png"
-                : "event-without-profile.png";
-              link.href = canvas.toDataURL("image/png");
-              link.click();
+            domtoimage
+              .toPng(elements.eventContent, { quality: 1 })
+              .then(function (dataUrl) {
+                const link = document.createElement("a");
+                link.download =
+                  !removedProfileImage && profileImage
+                    ? "event-with-profile.png"
+                    : "event-without-profile.png";
+                link.href = dataUrl;
+                link.click();
 
-              hoverContent.style.display = originalStates.hoverContent;
-              if (noImagePlaceholder) {
-                noImagePlaceholder.style.display =
-                  originalStates.noImagePlaceholder;
+                hoverContent.style.display = originalStates.hoverContent;
+                if (noImagePlaceholder)
+                  noImagePlaceholder.style.display =
+                    originalStates.noImagePlaceholder;
                 if (overlay) overlay.style.display = originalStates.overlay;
-              }
-            });
+
+                if (removedProfileImage && profileImageParent) {
+                  if (profileImageNextSibling) {
+                    profileImageParent.insertBefore(
+                      profileImage,
+                      profileImageNextSibling
+                    );
+                  } else {
+                    profileImageParent.appendChild(profileImage);
+                  }
+                }
+              })
+              .catch(function (error) {
+                console.error(
+                  "An error occurred while generating the image:",
+                  error
+                );
+
+                hoverContent.style.display = originalStates.hoverContent;
+                if (noImagePlaceholder)
+                  noImagePlaceholder.style.display =
+                    originalStates.noImagePlaceholder;
+                if (overlay) overlay.style.display = originalStates.overlay;
+
+                if (removedProfileImage && profileImageParent) {
+                  if (profileImageNextSibling) {
+                    profileImageParent.insertBefore(
+                      profileImage,
+                      profileImageNextSibling
+                    );
+                  } else {
+                    profileImageParent.appendChild(profileImage);
+                  }
+                }
+              });
           },
 
           setupEventData(event, registrantDetails, registrantProfilePicture) {
