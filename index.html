@@ -352,7 +352,8 @@
 
         const config = {
           API_URL: "https://swoogo-image-generation-plugin-backend-euif.vercel.app",
-          eventId: 244694,
+          eventId: 238288,
+          registrantId: 50250814,
         };
 
         let state = {
@@ -381,15 +382,14 @@
 
           shareToSocialMedia(platform) {
             const eventName = elements.shareEventName.textContent.trim();
-
-            const shareText = `Just registered for ${eventName} at the @Health & innovationdistrict. Will I see you there?`;
+            const shareText = `I just registered for ${eventName}. Will I see you there?`;
 
             const instructions =
               "1. The share text will be copied to your clipboard\n" +
               "2. An image will be downloaded to your device\n" +
-              `3. You'll need to manually open ${
+              `3. You'll be redirected to ${
                 platform.charAt(0).toUpperCase() + platform.slice(1)
-              } and create a new post with the downloaded image and copied text`;
+              } to create a new post`;
 
             const confirmMessage = `You're about to share to ${
               platform.charAt(0).toUpperCase() + platform.slice(1)
@@ -472,9 +472,23 @@
                   link.href = dataUrl;
                   link.click();
 
-                  alert(
-                    `The image has been downloaded to your device and text copied to your clipboard.\n\nPlease open ${platform} manually and create a new post with the downloaded image and paste the copied text.`
-                  );
+                  const socialUrls = {
+                    linkedin: "https://www.linkedin.com/share/new",
+                    twitter: "https://twitter.com/intent/tweet",
+                    instagram: "https://www.instagram.com/",
+                    whatsapp:
+                      "https://wa.me/?text=" + encodeURIComponent(shareText),
+                  };
+
+                  setTimeout(() => {
+                    if (socialUrls[platform]) {
+                      window.open(socialUrls[platform], "_blank");
+                    } else {
+                      alert(
+                        `Please manually open ${platform} and create a new post with the downloaded image and copied text.`
+                      );
+                    }
+                  }, 500);
                 })
                 .catch(function (error) {
                   console.error("Error generating image for sharing:", error);
@@ -514,9 +528,23 @@
                       );
                     });
 
-                    alert(
-                      `Please open ${platform} manually and paste the copied text.`
-                    );
+                    const socialTextUrls = {
+                      linkedin: "https://www.linkedin.com/share/new",
+                      twitter:
+                        "https://twitter.com/intent/tweet?text=" +
+                        encodeURIComponent(shareText),
+                      instagram: "https://www.instagram.com/",
+                      whatsapp:
+                        "https://wa.me/?text=" + encodeURIComponent(shareText),
+                    };
+
+                    if (socialTextUrls[platform]) {
+                      window.open(socialTextUrls[platform], "_blank");
+                    } else {
+                      alert(
+                        `Please manually open ${platform} and paste the copied text.`
+                      );
+                    }
                   }
                 });
             }
@@ -860,9 +888,8 @@
             return;
           }
 
-          const registrant = registrants[0];
           const registrantDetails = await api.getRegistrantDetailsById(
-            registrant.id
+            config.registrantId
           );
           if (!registrantDetails) {
             ui.showUploadOption();
@@ -871,7 +898,7 @@
 
           const registrantProfilePicture = await api.getObjectAssetsByObjectId(
             "registrant",
-            registrant.id,
+            config.registrantId,
             "profile_picture"
           );
 
