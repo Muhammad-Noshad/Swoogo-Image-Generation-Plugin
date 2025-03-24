@@ -23,15 +23,23 @@
 
       .share-event,
       .share-event * {
-        font-family: "Avenir", sans-serif;
         margin: 0;
         padding: 0;
-        color: #ef6c37;
         max-width: 740px;
       }
 
+      .share-event p,
+      .share-event a {
+        font-family: "Avenir", sans-serif;
+      }
+
+      .share-event-header > h3,
+      .share-event-details > h3 {
+        color: #ef6c37;
+      }
+
       .share-event h3 {
-        font-family: "RigShaded", sans-serif;
+        font-family: "RigShaded", sans-serif !important;
         font-weight: 700;
         font-size: 20px;
         text-transform: uppercase;
@@ -384,25 +392,24 @@
             const eventName = elements.shareEventName.textContent.trim();
             const shareText = `I just registered for ${eventName}. Will I see you there?`;
 
-            const instructions =
-              "1. The share text will be copied to your clipboard\n" +
-              "2. An image will be downloaded to your device\n" +
-              `3. You'll be redirected to ${
-                platform.charAt(0).toUpperCase() + platform.slice(1)
-              } to create a new post`;
+            // const instructions =
+            //   "1. The share text will be copied to your clipboard\n" +
+            //   "2. An image will be downloaded to your device\n" +
+            //   `3. You'll be redirected to ${
+            //     platform.charAt(0).toUpperCase() + platform.slice(1)
+            //   } to create a new post`;
 
-            const confirmMessage = `You're about to share to ${
-              platform.charAt(0).toUpperCase() + platform.slice(1)
-            }:\n\n${instructions}\n\nWould you like to continue?`;
+            // const confirmMessage = `You're about to share to ${
+            //   platform.charAt(0).toUpperCase() + platform.slice(1)
+            // }:\n\n${instructions}\n\nWould you like to continue?`;
 
-            if (confirm(confirmMessage)) {
+            // if (confirm(confirmMessage)) {
               const hoverContent = document.querySelector(
                 ".share-event-hover-content"
               );
               const noImagePlaceholder = document.querySelector(
                 ".no-image-placeholder"
               );
-              const overlay = document.querySelector(".overlay");
               const profileImage = document.querySelector(
                 ".share-event-profile-image"
               );
@@ -412,7 +419,6 @@
                 noImagePlaceholder: noImagePlaceholder
                   ? noImagePlaceholder.style.display
                   : null,
-                overlay: overlay ? overlay.style.display : null,
               };
 
               let profileImageParent = null;
@@ -421,7 +427,6 @@
 
               if (hoverContent) hoverContent.style.display = "none";
               if (noImagePlaceholder) noImagePlaceholder.style.display = "none";
-              if (overlay) overlay.style.display = "none";
 
               if (profileImage) {
                 const src = profileImage.getAttribute("src");
@@ -441,7 +446,6 @@
                   if (noImagePlaceholder)
                     noImagePlaceholder.style.display =
                       originalStates.noImagePlaceholder;
-                  if (overlay) overlay.style.display = originalStates.overlay;
 
                   if (removedProfileImage && profileImageParent) {
                     if (profileImageNextSibling) {
@@ -498,7 +502,6 @@
                   if (noImagePlaceholder)
                     noImagePlaceholder.style.display =
                       originalStates.noImagePlaceholder;
-                  if (overlay) overlay.style.display = originalStates.overlay;
 
                   if (removedProfileImage && profileImageParent) {
                     if (profileImageNextSibling) {
@@ -547,7 +550,7 @@
                     }
                   }
                 });
-            }
+            // }
           },
         };
 
@@ -607,8 +610,6 @@
                 target.closest(".without-image")
               ) {
                 noImageDiv.remove();
-                const overlay = document.querySelector(".overlay");
-                if (overlay) overlay.remove();
               }
             });
           },
@@ -629,7 +630,6 @@
             const noImagePlaceholder = document.querySelector(
               ".no-image-placeholder"
             );
-            const overlay = document.querySelector(".overlay");
             const profileImage = document.querySelector(
               ".share-event-profile-image"
             );
@@ -639,7 +639,6 @@
               noImagePlaceholder: noImagePlaceholder
                 ? noImagePlaceholder.style.display
                 : null,
-              overlay: overlay ? overlay.style.display : null,
             };
 
             let profileImageParent = null;
@@ -648,7 +647,6 @@
 
             hoverContent.style.display = "none";
             if (noImagePlaceholder) noImagePlaceholder.style.display = "none";
-            if (overlay) overlay.style.display = "none";
 
             if (profileImage) {
               const src = profileImage.getAttribute("src");
@@ -675,7 +673,6 @@
                 if (noImagePlaceholder)
                   noImagePlaceholder.style.display =
                     originalStates.noImagePlaceholder;
-                if (overlay) overlay.style.display = originalStates.overlay;
 
                 if (removedProfileImage && profileImageParent) {
                   if (profileImageNextSibling) {
@@ -698,7 +695,6 @@
                 if (noImagePlaceholder)
                   noImagePlaceholder.style.display =
                     originalStates.noImagePlaceholder;
-                if (overlay) overlay.style.display = originalStates.overlay;
 
                 if (removedProfileImage && profileImageParent) {
                   if (profileImageNextSibling) {
