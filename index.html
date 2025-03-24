@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Swoogo Image Generation Plugin</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    />
     <style>
       @font-face {
         font-family: "RigShaded";
@@ -29,8 +34,26 @@
       }
 
       .share-event p,
-      .share-event a {
+      .share-event a,
+      .share-event button {
         font-family: "Avenir", sans-serif;
+      }
+
+      .cropper-btn {
+        background-color: #ef6c37;
+        color: #ffffff;
+        padding: 10px 0;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        width: 100px;
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+      }
+
+      .cropper-btn:hover {
+        background-color: #ffffff;
+        color: #ef6c37;
+        border-color: #ef6c2799;
       }
 
       .share-event-header > h3,
@@ -404,153 +427,197 @@
             // }:\n\n${instructions}\n\nWould you like to continue?`;
 
             // if (confirm(confirmMessage)) {
-              const hoverContent = document.querySelector(
-                ".share-event-hover-content"
-              );
-              const noImagePlaceholder = document.querySelector(
-                ".no-image-placeholder"
-              );
-              const profileImage = document.querySelector(
-                ".share-event-profile-image"
-              );
+            const hoverContent = document.querySelector(
+              ".share-event-hover-content"
+            );
+            const noImagePlaceholder = document.querySelector(
+              ".no-image-placeholder"
+            );
+            const profileImage = document.querySelector(
+              ".share-event-profile-image"
+            );
 
-              const originalStates = {
-                hoverContent: hoverContent ? hoverContent.style.display : null,
-                noImagePlaceholder: noImagePlaceholder
-                  ? noImagePlaceholder.style.display
-                  : null,
-              };
+            const originalStates = {
+              hoverContent: hoverContent ? hoverContent.style.display : null,
+              noImagePlaceholder: noImagePlaceholder
+                ? noImagePlaceholder.style.display
+                : null,
+            };
 
-              let profileImageParent = null;
-              let profileImageNextSibling = null;
-              let removedProfileImage = false;
+            let profileImageParent = null;
+            let profileImageNextSibling = null;
+            let removedProfileImage = false;
 
-              if (hoverContent) hoverContent.style.display = "none";
-              if (noImagePlaceholder) noImagePlaceholder.style.display = "none";
+            if (hoverContent) hoverContent.style.display = "none";
+            if (noImagePlaceholder) noImagePlaceholder.style.display = "none";
 
-              if (profileImage) {
-                const src = profileImage.getAttribute("src");
-                if (!src || src.trim() === "") {
-                  profileImageParent = profileImage.parentNode;
-                  profileImageNextSibling = profileImage.nextSibling;
-                  profileImageParent.removeChild(profileImage);
-                  removedProfileImage = true;
-                }
+            if (profileImage) {
+              const src = profileImage.getAttribute("src");
+              if (!src || src.trim() === "") {
+                profileImageParent = profileImage.parentNode;
+                profileImageNextSibling = profileImage.nextSibling;
+                profileImageParent.removeChild(profileImage);
+                removedProfileImage = true;
               }
+            }
 
-              domtoimage
-                .toPng(elements.eventContent, { quality: 1 })
-                .then(function (dataUrl) {
-                  if (hoverContent)
-                    hoverContent.style.display = originalStates.hoverContent;
-                  if (noImagePlaceholder)
-                    noImagePlaceholder.style.display =
-                      originalStates.noImagePlaceholder;
+            domtoimage
+              .toPng(elements.eventContent, { quality: 1 })
+              .then(function (dataUrl) {
+                if (hoverContent)
+                  hoverContent.style.display = originalStates.hoverContent;
+                if (noImagePlaceholder)
+                  noImagePlaceholder.style.display =
+                    originalStates.noImagePlaceholder;
 
-                  if (removedProfileImage && profileImageParent) {
-                    if (profileImageNextSibling) {
-                      profileImageParent.insertBefore(
-                        profileImage,
-                        profileImageNextSibling
-                      );
-                    } else {
-                      profileImageParent.appendChild(profileImage);
-                    }
+                if (removedProfileImage && profileImageParent) {
+                  if (profileImageNextSibling) {
+                    profileImageParent.insertBefore(
+                      profileImage,
+                      profileImageNextSibling
+                    );
+                  } else {
+                    profileImageParent.appendChild(profileImage);
                   }
+                }
 
-                  navigator.clipboard
-                    .writeText(shareText)
-                    .then(() => {
-                      console.log("Share text copied to clipboard");
-                    })
-                    .catch((err) => {
-                      console.error("Could not copy text: ", err);
-                      alert(
-                        "Could not copy text to clipboard. Please copy this text manually:\n\n" +
-                          shareText
-                      );
-                    });
+                navigator.clipboard
+                  .writeText(shareText)
+                  .then(() => {
+                    console.log("Share text copied to clipboard");
+                  })
+                  .catch((err) => {
+                    console.error("Could not copy text: ", err);
+                    alert(
+                      "Could not copy text to clipboard. Please copy this text manually:\n\n" +
+                        shareText
+                    );
+                  });
 
-                  const link = document.createElement("a");
-                  link.download = `${platform}-share-image.png`;
-                  link.href = dataUrl;
-                  link.click();
+                const link = document.createElement("a");
+                link.download = `${platform}-share-image.png`;
+                link.href = dataUrl;
+                link.click();
 
-                  const socialUrls = {
+                const socialUrls = {
+                  linkedin: "https://www.linkedin.com/share/new",
+                  twitter: "https://twitter.com/intent/tweet",
+                  instagram: "https://www.instagram.com/",
+                  whatsapp:
+                    "https://wa.me/?text=" + encodeURIComponent(shareText),
+                };
+
+                setTimeout(() => {
+                  if (socialUrls[platform]) {
+                    window.open(socialUrls[platform], "_blank");
+                  } else {
+                    alert(
+                      `Please manually open ${platform} and create a new post with the downloaded image and copied text.`
+                    );
+                  }
+                }, 500);
+              })
+              .catch(function (error) {
+                console.error("Error generating image for sharing:", error);
+
+                if (hoverContent)
+                  hoverContent.style.display = originalStates.hoverContent;
+                if (noImagePlaceholder)
+                  noImagePlaceholder.style.display =
+                    originalStates.noImagePlaceholder;
+
+                if (removedProfileImage && profileImageParent) {
+                  if (profileImageNextSibling) {
+                    profileImageParent.insertBefore(
+                      profileImage,
+                      profileImageNextSibling
+                    );
+                  } else {
+                    profileImageParent.appendChild(profileImage);
+                  }
+                }
+
+                alert(
+                  "Could not generate the image for sharing. Would you still like to share without an image?"
+                );
+
+                if (
+                  confirm(
+                    "Would you like to continue sharing without the image?"
+                  )
+                ) {
+                  navigator.clipboard.writeText(shareText).catch((err) => {
+                    console.error("Could not copy text: ", err);
+                    alert(
+                      "Could not copy text to clipboard. Please copy this text manually:\n\n" +
+                        shareText
+                    );
+                  });
+
+                  const socialTextUrls = {
                     linkedin: "https://www.linkedin.com/share/new",
-                    twitter: "https://twitter.com/intent/tweet",
+                    twitter:
+                      "https://twitter.com/intent/tweet?text=" +
+                      encodeURIComponent(shareText),
                     instagram: "https://www.instagram.com/",
                     whatsapp:
                       "https://wa.me/?text=" + encodeURIComponent(shareText),
                   };
 
-                  setTimeout(() => {
-                    if (socialUrls[platform]) {
-                      window.open(socialUrls[platform], "_blank");
-                    } else {
-                      alert(
-                        `Please manually open ${platform} and create a new post with the downloaded image and copied text.`
-                      );
-                    }
-                  }, 500);
-                })
-                .catch(function (error) {
-                  console.error("Error generating image for sharing:", error);
-
-                  if (hoverContent)
-                    hoverContent.style.display = originalStates.hoverContent;
-                  if (noImagePlaceholder)
-                    noImagePlaceholder.style.display =
-                      originalStates.noImagePlaceholder;
-
-                  if (removedProfileImage && profileImageParent) {
-                    if (profileImageNextSibling) {
-                      profileImageParent.insertBefore(
-                        profileImage,
-                        profileImageNextSibling
-                      );
-                    } else {
-                      profileImageParent.appendChild(profileImage);
-                    }
+                  if (socialTextUrls[platform]) {
+                    window.open(socialTextUrls[platform], "_blank");
+                  } else {
+                    alert(
+                      `Please manually open ${platform} and paste the copied text.`
+                    );
                   }
-
-                  alert(
-                    "Could not generate the image for sharing. Would you still like to share without an image?"
-                  );
-
-                  if (
-                    confirm(
-                      "Would you like to continue sharing without the image?"
-                    )
-                  ) {
-                    navigator.clipboard.writeText(shareText).catch((err) => {
-                      console.error("Could not copy text: ", err);
-                      alert(
-                        "Could not copy text to clipboard. Please copy this text manually:\n\n" +
-                          shareText
-                      );
-                    });
-
-                    const socialTextUrls = {
-                      linkedin: "https://www.linkedin.com/share/new",
-                      twitter:
-                        "https://twitter.com/intent/tweet?text=" +
-                        encodeURIComponent(shareText),
-                      instagram: "https://www.instagram.com/",
-                      whatsapp:
-                        "https://wa.me/?text=" + encodeURIComponent(shareText),
-                    };
-
-                    if (socialTextUrls[platform]) {
-                      window.open(socialTextUrls[platform], "_blank");
-                    } else {
-                      alert(
-                        `Please manually open ${platform} and paste the copied text.`
-                      );
-                    }
-                  }
-                });
+                }
+              });
             // }
+          },
+          openCropper(imageSrc) {
+            const cropperModal = document.createElement("div");
+            cropperModal.innerHTML = `
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center;">
+      <div style="background: white; padding: 20px; border-radius: 10px; max-width: 90%; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; align-items: center;">
+        <div style="width: 100%; max-height: 70vh; overflow: hidden; display: flex; justify-content: center;">
+          <img id="cropperImage" src="${imageSrc}" style="max-width: 100%; max-height: 70vh; object-fit: contain;">
+        </div>
+        <div style="margin-top: 10px;">
+          <button id="cancelBtn" class="cropper-btn">Cancel</button>
+          <button id="cropBtn" class="cropper-btn">Crop</button>
+        </div>
+      </div>
+    </div>
+  `;
+            document.body.appendChild(cropperModal);
+
+            const cropperImage = document.getElementById("cropperImage");
+            const cropper = new Cropper(cropperImage, {
+              aspectRatio: 1,
+              viewMode: 2,
+              responsive: true,
+              scalable: false,
+              zoomable: true,
+              autoCropArea: 1,
+            });
+
+            document.getElementById("cropBtn").addEventListener("click", () => {
+              const croppedCanvas = cropper.getCroppedCanvas();
+              if (croppedCanvas) {
+                const croppedImage = croppedCanvas.toDataURL();
+                ui.setProfileImage(croppedImage);
+              }
+              document.body.removeChild(cropperModal);
+              cropper.destroy();
+            });
+
+            document
+              .getElementById("cancelBtn")
+              .addEventListener("click", () => {
+                document.body.removeChild(cropperModal);
+                cropper.destroy();
+              });
           },
         };
 
@@ -569,9 +636,9 @@
             const loadingDiv = document.createElement("div");
             loadingDiv.className = "no-image-placeholder loading-state";
             loadingDiv.innerHTML = `
-        <div class="loading-spinner"></div>
-        <p class="black small bold">Loading profile...</p>
-      `;
+          <div class="loading-spinner"></div>
+          <p class="black small bold">Loading profile...</p>
+        `;
             elements.profileContainer.appendChild(loadingDiv);
           },
 
@@ -590,11 +657,11 @@
             const noImageDiv = document.createElement("div");
             noImageDiv.className = "no-image-placeholder";
             noImageDiv.innerHTML = `
-        <img src="./images/upload-icon.svg">
-        <p class="black small profile-img-input bold">Upload image</p>
-        <p class="black-divider"></p>
-        <p class="black small without-image bold">Without image</p>
-      `;
+          <img src="./images/upload-icon.svg">
+          <p class="black small profile-img-input bold">Upload image</p>
+          <p class="black-divider"></p>
+          <p class="black small without-image bold">Without image</p>
+        `;
             elements.profileContainer.appendChild(noImageDiv);
 
             noImageDiv.addEventListener("click", function (e) {
@@ -799,7 +866,7 @@
             const file = event.target.files[0];
             if (file) {
               const reader = new FileReader();
-              reader.onload = (e) => ui.setProfileImage(e.target.result);
+              reader.onload = (e) => helpers.openCropper(e.target.result);
               reader.readAsDataURL(file);
             }
           });
