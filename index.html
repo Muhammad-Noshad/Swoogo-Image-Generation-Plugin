@@ -802,11 +802,14 @@
 
           elements.shareIcon.addEventListener("click", (e) => {
             e.preventDefault();
+            console.log("Starting...")
             const redirectUri = `${config.API_URL}/auth/callback`;
             const scope = "w_member_social";
             const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${config.clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
+            console.log("In Progress...")
 
             window.location.href = linkedInAuthUrl;
+            console.log("Done...")
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get("token");
             console.log("Token:", token);
