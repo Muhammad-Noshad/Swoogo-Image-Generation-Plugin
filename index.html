@@ -802,9 +802,9 @@
           elements.shareIcon.addEventListener("click", (e) => {
             e.preventDefault();
             // helpers.shareToSocialMedia("linkedin");
-            const clientId = "77b7d7jfbsa8qx";
+            const clientId = "7712xqkqiwy7hu";
             const redirectUri = `${config.API_URL}/auth/callback`;
-            const scope = "r_liteprofile r_emailaddress w_member_social";
+            const scope = "w_member_social";
             const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
 
             window.location.href = linkedInAuthUrl;
