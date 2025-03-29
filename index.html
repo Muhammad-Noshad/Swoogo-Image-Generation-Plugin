@@ -387,15 +387,16 @@
 
         const config = {
           API_URL: "https://swoogo-image-generation-plugin-backend.vercel.app",
-          // Debug
           // API_URL: "http://localhost:3000",
+          clientId: "7712xqkqiwy7hu",
           eventId: 238288,
           registrantId: 50250814,
         };
 
         let state = {
           hasProfileImage: false,
-          token: null,
+          swToken: null,
+          liToken: null,
           isLoading: true,
         };
 
@@ -695,7 +696,7 @@
                 method: "GET",
                 headers: {
                   "Content-Type": "application/json",
-                  Authorization: `Bearer ${state.token}`,
+                  Authorization: `Bearer ${state.swToken}`,
                 },
               });
 
@@ -801,13 +802,15 @@
 
           elements.shareIcon.addEventListener("click", (e) => {
             e.preventDefault();
-            // helpers.shareToSocialMedia("linkedin");
-            const clientId = "7712xqkqiwy7hu";
             const redirectUri = `${config.API_URL}/auth/callback`;
             const scope = "w_member_social";
-            const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
+            const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${config.clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
 
             window.location.href = linkedInAuthUrl;
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get("token");
+            console.log("Token:", token);
+            window.history.replaceState(null, "", window.location.pathname);
           });
         }
 
@@ -815,8 +818,8 @@
           setupEventListeners();
           ui.showLoadingState();
 
-          state.token = await api.getToken();
-          if (!state.token) {
+          state.swToken = await api.getToken();
+          if (!state.swToken) {
             ui.showUploadOption();
             return;
           }
