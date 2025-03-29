@@ -387,6 +387,7 @@
 
         const config = {
           API_URL: "https://swoogo-image-generation-plugin-backend-euif.vercel.app",
+          // API_URL: "http://localhost:3000",
           eventId: 238288,
           registrantId: 50250814,
         };
@@ -799,7 +800,13 @@
 
           elements.shareIcon.addEventListener("click", (e) => {
             e.preventDefault();
-            helpers.shareToSocialMedia("linkedin");
+            // helpers.shareToSocialMedia("linkedin");
+            const clientId = "77b7d7jfbsa8qx";
+            const redirectUri = "https://swoogo-image-generation-pl-git-018d7f-muhammad-noshads-projects.vercel.app/auth/callback";
+            const scope = "r_liteprofile r_emailaddress w_member_social";
+            const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
+
+            window.location.href = linkedInAuthUrl;
           });
         }
 
