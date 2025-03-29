@@ -496,6 +496,13 @@
                 cropper.destroy();
               });
           },
+
+          liTokenExtractor () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get("token");
+            console.log("Token:", token);
+            window.history.replaceState(null, "", window.location.pathname);
+          }
         };
 
         const ui = {
@@ -810,16 +817,13 @@
 
             window.location.href = linkedInAuthUrl;
             console.log("Done...")
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get("token");
-            console.log("Token:", token);
-            window.history.replaceState(null, "", window.location.pathname);
           });
         }
 
         async function init() {
           setupEventListeners();
           ui.showLoadingState();
+          helpers.liTokenExtractor();
 
           state.swToken = await api.getToken();
           if (!state.swToken) {
