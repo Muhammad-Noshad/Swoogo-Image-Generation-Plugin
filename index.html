@@ -561,7 +561,7 @@
             }
 
             helpers.changeState("liAssetId", liAssetId);
-            console.log("Asset ID:", liAssetId)
+            console.log("Asset ID:", liAssetId);
 
             const shareText = `I just registered for ${state.event.name}. Will I see you there?`;
             const modifiedShareText = helpers.insertRandomZWSPs(shareText);
@@ -839,12 +839,15 @@
 
               formData.append("accessToken", accessToken);
               formData.append("userId", userId);
-              formData.append("image", imageBlob, "image.png")
-              
-              const response = await fetch(`${config.API_URL}/linkedin/upload-image`, { method: "POST", body: formData, });
+              formData.append("image", imageBlob, "image.png");
+
+              const response = await fetch(
+                `${config.API_URL}/linkedin/upload-image`,
+                { method: "POST", body: formData }
+              );
 
               const data = await response.json();
-              
+
               if (!response.ok) throw new Error(data.error || "Upload failed");
 
               return data.assetId;
@@ -982,9 +985,12 @@
           const isFound = helpers.getState();
           setupEventListeners();
           if (isFound) {
-            ui.setupEventData(state.event, state.registrantDetails, state.registrantProfilePicture);
-          }
-          else {
+            ui.setupEventData(
+              state.event,
+              state.registrantDetails,
+              state.registrantProfilePicture
+            );
+          } else {
             ui.showLoadingState();
           }
           helpers.liTokenExtractor();
@@ -992,47 +998,59 @@
             helpers.createLinkedInPost();
           }
 
-          const swToken = await api.getToken();
-          if (!swToken) {
-            ui.showUploadOption();
-            return;
-          } else {
-            helpers.changeState("swToken", swToken);
+          if (!isFound) {
+            const swToken = await api.getToken();
+            if (!swToken) {
+              ui.showUploadOption();
+              return;
+            } else {
+              helpers.changeState("swToken", swToken);
+            }
+
+            const event = await api.getEventDetailsById(config.eventId);
+            if (!event) {
+              ui.showUploadOption();
+              return;
+            } else {
+              helpers.changeState("event", event);
+            }
+
+            const registrants = await api.getRegistrantsByEventId(
+              config.eventId
+            );
+            if (!registrants.length) {
+              ui.showUploadOption();
+              return;
+            }
+
+            const registrantDetails = await api.getRegistrantDetailsById(
+              config.registrantId
+            );
+            if (!registrantDetails) {
+              ui.showUploadOption();
+              return;
+            } else {
+              helpers.changeState("registrantDetails", registrantDetails);
+            }
+
+            const registrantProfilePicture =
+              await api.getObjectAssetsByObjectId(
+                "registrant",
+                config.registrantId,
+                "profile_picture"
+              );
+
+            helpers.changeState(
+              "registrantProfilePicture",
+              registrantProfilePicture
+            );
+
+            ui.setupEventData(
+              event,
+              registrantDetails,
+              registrantProfilePicture
+            );
           }
-
-          const event = await api.getEventDetailsById(config.eventId);
-          if (!event) {
-            ui.showUploadOption();
-            return;
-          } else {
-            helpers.changeState("event", event);
-          }
-
-          const registrants = await api.getRegistrantsByEventId(config.eventId);
-          if (!registrants.length) {
-            ui.showUploadOption();
-            return;
-          }
-
-          const registrantDetails = await api.getRegistrantDetailsById(
-            config.registrantId
-          );
-          if (!registrantDetails) {
-            ui.showUploadOption();
-            return;
-          } else {
-            helpers.changeState("registrantDetails", registrantDetails);
-          }
-
-          const registrantProfilePicture = await api.getObjectAssetsByObjectId(
-            "registrant",
-            config.registrantId,
-            "profile_picture"
-          );
-
-          helpers.changeState("registrantProfilePicture", registrantProfilePicture);
-
-          ui.setupEventData(event, registrantDetails, registrantProfilePicture);
         }
 
         init();
