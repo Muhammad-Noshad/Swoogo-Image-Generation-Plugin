@@ -554,7 +554,7 @@
 
             helpers.changeState("liAssetId", "test");
 
-            const shareText = `I just registered for ${state.event.name}. Will I see you there?`;
+            const shareText = `I just registered for ${state.event.name}. Will I see you there? ${Math.random()}`;
             const postResponse = await api.createPost(
               state.liToken,
               state.liUserId,
