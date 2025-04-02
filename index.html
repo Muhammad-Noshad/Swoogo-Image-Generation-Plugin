@@ -394,6 +394,7 @@
         };
 
         let state = {
+          isShareOnLinkedInClicked: false,
           hasProfileImage: false,
           swToken: null,
           liToken: null,
@@ -528,6 +529,45 @@
               state[key] = value;
               helpers.storeState();
             }
+          },
+
+          async createLinkedInPost() {
+            const liUserId = await api.getUserId(state.liToken);
+            if (!liUserId) {
+              console.error("Failed to retrieve LinkedIn user ID.");
+              return;
+            }
+            else {
+              helpers.changeState("liUserId", liUserId);
+            }
+
+            // state.liAssetId = await api.uploadImage(
+            //   state.liToken,
+            //   state.liUserId,
+            //   imageBlob
+            // );
+            // if (!state.liAssetId) {
+            //   alert("Failed to upload image to LinkedIn.");
+            //   return;
+            // }
+
+            helpers.changeState("liAssetId", "test");
+
+            const shareText = `I just registered for ${elements.shareEventName.textContent.trim()}. Will I see you there?`;
+            const postResponse = await api.createPost(
+              state.liToken,
+              state.liUserId,
+              shareText,
+              state.liAssetId
+            );
+
+            if (postResponse) {
+              alert("Post successfully shared on LinkedIn!");
+            } else {
+              alert("Failed to share on LinkedIn.");
+            }
+
+            helpers.changeState("isShareOnLinkedInClicked", false);
           }
         };
 
@@ -929,41 +969,9 @@
               }&redirect_uri=${encodeURIComponent(
                 redirectUri
               )}&scope=${encodeURIComponent(scope)}`;
-              return;
             }
 
-            liUserId = await api.getUserId(state.liToken);
-            if (!liUserId) {
-              console.error("Failed to retrieve LinkedIn user ID.");
-              return;
-            }
-            else {
-              helpers.changeState("liUserId", liUserId);
-            }
-
-            // state.liAssetId = await api.uploadImage(
-            //   state.liToken,
-            //   state.liUserId,
-            //   imageBlob
-            // );
-            // if (!state.liAssetId) {
-            //   alert("Failed to upload image to LinkedIn.");
-            //   return;
-            // }
-
-            const shareText = `I just registered for ${elements.shareEventName.textContent.trim()}. Will I see you there?`;
-            const postResponse = await api.createPost(
-              state.liToken,
-              state.liUserId,
-              shareText,
-              state.liAssetId
-            );
-
-            if (postResponse) {
-              alert("Post successfully shared on LinkedIn!");
-            } else {
-              alert("Failed to share on LinkedIn.");
-            }
+            helpers.changeState("isShareOnLinkedInClicked", true);
           });
         }
 
@@ -972,8 +980,11 @@
           setupEventListeners();
           ui.showLoadingState();
           helpers.liTokenExtractor();
+          if(state.isShareOnLinkedInClicked) {
+            helpers.createLinkedInPost();
+          }
 
-          swToken = await api.getToken();
+          const swToken = await api.getToken();
           if (!swToken) {
             ui.showUploadOption();
             return;
