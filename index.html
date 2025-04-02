@@ -541,8 +541,8 @@
               helpers.changeState("liUserId", liUserId);
             }
 
-            const dataUrl = await ui.downloadEventAsImage(true);
-            console.log("RESULTANT", dataUrl);
+            const blob = await ui.downloadEventAsImage(true);
+            console.log("RESULTANT BLOB", blob);
             // const blob = helpers.dataURLToBlob(dataUrl);
             // console.log("Blob", blob);
 
@@ -683,7 +683,7 @@
             if (placeholder) placeholder.remove();
           },
 
-          downloadEventAsImage(returnDataUrl = false) {
+          async downloadEventAsImage(returnDataUrl = false) {
             const hoverContent = document.querySelector(
               ".share-event-hover-content"
             );
@@ -718,61 +718,94 @@
               }
             }
 
-            domtoimage
-              .toPng(elements.eventContent, { quality: 1 })
-              .then(function (dataUrl) {
-                if (!returnDataUrl) {
-                  const link = document.createElement("a");
-                  link.download =
-                    !removedProfileImage && profileImage
-                      ? "event-with-profile.png"
-                      : "event-without-profile.png";
-                  link.href = dataUrl;
-                  link.click();
+            try {
+              const dataUrl = await domtoimage.toPng(elements.eventContent, { quality: 1 });
+
+              if (!returnDataUrl) {
+                const link = document.createElement("a");
+                link.download = removedProfileImage || !profileImage 
+                  ? "event-without-profile.png" 
+                  : "event-with-profile.png";
+                link.href = dataUrl;
+                link.click();
+              } else {
+                const response = await fetch(dataUrl);
+                return await response.blob();
+              }
+            } catch (error) {
+              console.error("An error occurred while generating the image:", error);
+              throw error;
+            } finally {
+              hoverContent.style.display = originalStates.hoverContent;
+              if (noImagePlaceholder) {
+                noImagePlaceholder.style.display = originalStates.noImagePlaceholder;
+              }
+
+              if (removedProfileImage && profileImageParent) {
+                if (profileImageNextSibling) {
+                  profileImageParent.insertBefore(profileImage, profileImageNextSibling);
+                } else {
+                  profileImageParent.appendChild(profileImage);
                 }
+              }
+            }
+          
+            // domtoimage
+            //   .toPng(elements.eventContent, { quality: 1 })
+            //   .then(function (dataUrl) {
+            //     if (!returnDataUrl) {
+            //       const link = document.createElement("a");
+            //       link.download =
+            //         !removedProfileImage && profileImage
+            //           ? "event-with-profile.png"
+            //           : "event-without-profile.png";
+            //       link.href = dataUrl;
+            //       link.click();
+            //     }
 
-                hoverContent.style.display = originalStates.hoverContent;
-                if (noImagePlaceholder)
-                  noImagePlaceholder.style.display =
-                    originalStates.noImagePlaceholder;
+            //     hoverContent.style.display = originalStates.hoverContent;
+            //     if (noImagePlaceholder)
+            //       noImagePlaceholder.style.display =
+            //         originalStates.noImagePlaceholder;
 
-                if (removedProfileImage && profileImageParent) {
-                  if (profileImageNextSibling) {
-                    profileImageParent.insertBefore(
-                      profileImage,
-                      profileImageNextSibling
-                    );
-                  } else {
-                    profileImageParent.appendChild(profileImage);
-                  }
-                }
+            //     if (removedProfileImage && profileImageParent) {
+            //       if (profileImageNextSibling) {
+            //         profileImageParent.insertBefore(
+            //           profileImage,
+            //           profileImageNextSibling
+            //         );
+            //       } else {
+            //         profileImageParent.appendChild(profileImage);
+            //       }
+            //     }
 
-                if (returnDataUrl) {
-                  return dataUrl;
-                }
-              })
-              .catch(function (error) {
-                console.error(
-                  "An error occurred while generating the image:",
-                  error
-                );
+            //     if (returnDataUrl) {
+            //       const response = await fetch(dataUrl);
+            //       return await response.blob();
+            //     }
+            //   })
+            //   .catch(function (error) {
+            //     console.error(
+            //       "An error occurred while generating the image:",
+            //       error
+            //     );
 
-                hoverContent.style.display = originalStates.hoverContent;
-                if (noImagePlaceholder)
-                  noImagePlaceholder.style.display =
-                    originalStates.noImagePlaceholder;
+            //     hoverContent.style.display = originalStates.hoverContent;
+            //     if (noImagePlaceholder)
+            //       noImagePlaceholder.style.display =
+            //         originalStates.noImagePlaceholder;
 
-                if (removedProfileImage && profileImageParent) {
-                  if (profileImageNextSibling) {
-                    profileImageParent.insertBefore(
-                      profileImage,
-                      profileImageNextSibling
-                    );
-                  } else {
-                    profileImageParent.appendChild(profileImage);
-                  }
-                }
-              });
+            //     if (removedProfileImage && profileImageParent) {
+            //       if (profileImageNextSibling) {
+            //         profileImageParent.insertBefore(
+            //           profileImage,
+            //           profileImageNextSibling
+            //         );
+            //       } else {
+            //         profileImageParent.appendChild(profileImage);
+            //       }
+            //     }
+            //   });
           },
 
           setupEventData(event, registrantDetails, registrantProfilePicture) {
