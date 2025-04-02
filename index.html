@@ -424,7 +424,8 @@
 
           shareToSocialMedia(platform) {
             const eventName = elements.shareEventName.textContent.trim();
-            const shareText = `I just registered for ${eventName}. Will I see you there?`;
+            const num = Math.random();
+            const shareText = `I just registered for ${eventName}. Will I see you there? ${num}`;
 
             navigator.clipboard
               .writeText(shareText)
