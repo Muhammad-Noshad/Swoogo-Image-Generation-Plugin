@@ -965,7 +965,7 @@
             // const imageUrl = generatedImage.imageUrl;
             // const imageBlob = await fetch(imageUrl).then((res) => res.blob());
 
-            if (!state.liToken) {
+            // if (!state.liToken) {
               const redirectUri = `${config.API_URL}/auth/callback`;
               const scope = "w_member_social openid profile email";
               window.location.href = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${
@@ -976,7 +976,7 @@
               console.log("CHANGED TO TRUE")
               helpers.changeState("isShareOnLinkedInClicked", true);
               return;
-            }
+            // }
 
             console.log("HELPERS CALLED")
             helpers.createLinkedInPost();
