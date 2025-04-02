@@ -424,8 +424,7 @@
           },
 
           shareToSocialMedia(platform) {
-            const num = Math.random();
-            const shareText = `I just registered for ${state.event.name}. Will I see you there? ${num}`;
+            const shareText = `I just registered for ${state.event.name}. Will I see you there?`;
 
             navigator.clipboard
               .writeText(shareText)
@@ -554,7 +553,7 @@
 
             helpers.changeState("liAssetId", "test");
 
-            const shareText = `I just registered for ${elements.shareEventName.textContent.trim()}. Will I see you there?`;
+            const shareText = `I just registered for ${state.event.name}. Will I see you there?`;
             const postResponse = await api.createPost(
               state.liToken,
               state.liUserId,
