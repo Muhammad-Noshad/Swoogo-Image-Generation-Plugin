@@ -397,6 +397,8 @@
           isShareOnLinkedInClicked: false,
           hasProfileImage: false,
           event: null,
+          registrantDetails: null,
+          registrantProfilePicture: null,
           swToken: null,
           liToken: null,
           liUserId: null,
@@ -520,9 +522,11 @@
             console.log("State:", res);
 
             if (res) {
-              res.isLoading = true;
               state = res;
+              return true;
             }
+
+            return false;
           },
 
           changeState(key, value) {
@@ -735,63 +739,6 @@
                 }
               }
             }
-
-            // domtoimage
-            //   .toPng(elements.eventContent, { quality: 1 })
-            //   .then(function (dataUrl) {
-            //     if (!returnDataUrl) {
-            //       const link = document.createElement("a");
-            //       link.download =
-            //         !removedProfileImage && profileImage
-            //           ? "event-with-profile.png"
-            //           : "event-without-profile.png";
-            //       link.href = dataUrl;
-            //       link.click();
-            //     }
-
-            //     hoverContent.style.display = originalStates.hoverContent;
-            //     if (noImagePlaceholder)
-            //       noImagePlaceholder.style.display =
-            //         originalStates.noImagePlaceholder;
-
-            //     if (removedProfileImage && profileImageParent) {
-            //       if (profileImageNextSibling) {
-            //         profileImageParent.insertBefore(
-            //           profileImage,
-            //           profileImageNextSibling
-            //         );
-            //       } else {
-            //         profileImageParent.appendChild(profileImage);
-            //       }
-            //     }
-
-            //     if (returnDataUrl) {
-            //       const response = await fetch(dataUrl);
-            //       return await response.blob();
-            //     }
-            //   })
-            //   .catch(function (error) {
-            //     console.error(
-            //       "An error occurred while generating the image:",
-            //       error
-            //     );
-
-            //     hoverContent.style.display = originalStates.hoverContent;
-            //     if (noImagePlaceholder)
-            //       noImagePlaceholder.style.display =
-            //         originalStates.noImagePlaceholder;
-
-            //     if (removedProfileImage && profileImageParent) {
-            //       if (profileImageNextSibling) {
-            //         profileImageParent.insertBefore(
-            //           profileImage,
-            //           profileImageNextSibling
-            //         );
-            //       } else {
-            //         profileImageParent.appendChild(profileImage);
-            //       }
-            //     }
-            //   });
           },
 
           setupEventData(event, registrantDetails, registrantProfilePicture) {
@@ -1010,18 +957,6 @@
               return;
             }
 
-            // const generatedImage = await api.generateShareableImage(
-            //   config.eventId,
-            //   config.registrantId
-            // );
-            // if (!generatedImage || !generatedImage.imageUrl) {
-            //   alert("Failed to generate shareable image.");
-            //   return;
-            // }
-
-            // const imageUrl = generatedImage.imageUrl;
-            // const imageBlob = await fetch(imageUrl).then((res) => res.blob());
-
             if (!state.liToken) {
               const redirectUri = `${config.API_URL}/auth/callback`;
               const scope = "w_member_social openid profile email";
@@ -1041,9 +976,14 @@
         }
 
         async function init() {
-          helpers.getState();
+          const isFound = helpers.getState();
           setupEventListeners();
-          ui.showLoadingState();
+          if (isFound) {
+            ui.setupEventData(state.event, state.registrantDetails, state.registrantProfilePicture);
+          }
+          else {
+            ui.showLoadingState();
+          }
           helpers.liTokenExtractor();
           if (state.isShareOnLinkedInClicked) {
             helpers.createLinkedInPost();
@@ -1077,6 +1017,8 @@
           if (!registrantDetails) {
             ui.showUploadOption();
             return;
+          } else {
+            helpers.changeState("registrantDetails", registrantDetails);
           }
 
           const registrantProfilePicture = await api.getObjectAssetsByObjectId(
@@ -1084,6 +1026,8 @@
             config.registrantId,
             "profile_picture"
           );
+
+          helpers.changeState("registrantProfilePicture", registrantProfilePicture);
 
           ui.setupEventData(event, registrantDetails, registrantProfilePicture);
         }
