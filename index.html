@@ -945,6 +945,10 @@
           elements.shareIcon.addEventListener("click", async (e) => {
             e.preventDefault();
 
+            if(state.isLoading) {
+              return;
+            }
+
             if (!state.swToken) {
               return;
             }
