@@ -386,8 +386,8 @@
         };
 
         const config = {
-          API_URL: "https://swoogo-image-generation-plugin-backend.vercel.app",
-          // API_URL: "http://localhost:3000",
+          // API_URL: "https://swoogo-image-generation-plugin-backend.vercel.app",
+          API_URL: "http://localhost:3000",
           clientId: "7712xqkqiwy7hu",
           eventId: 238288,
           registrantId: 50250814,
@@ -396,6 +396,7 @@
         let state = {
           isShareOnLinkedInClicked: false,
           hasProfileImage: false,
+          event: null,
           swToken: null,
           liToken: null,
           liUserId: null,
@@ -423,9 +424,8 @@
           },
 
           shareToSocialMedia(platform) {
-            const eventName = elements.shareEventName.textContent.trim();
             const num = Math.random();
-            const shareText = `I just registered for ${eventName}. Will I see you there? ${num}`;
+            const shareText = `I just registered for ${state.event.name}. Will I see you there? ${num}`;
 
             navigator.clipboard
               .writeText(shareText)
@@ -1002,6 +1002,9 @@
           if (!event) {
             ui.showUploadOption();
             return;
+          }
+          else {
+            helpers.changeState("event", event);
           }
 
           const registrants = await api.getRegistrantsByEventId(config.eventId);
