@@ -720,6 +720,7 @@
               .toPng(elements.eventContent, { quality: 1 })
               .then(function (dataUrl) {
                 if (returnDataUrl) {
+                  console.log("Returning:", dataUrl)
                   return dataUrl;
                 } else {
                   const link = document.createElement("a");
