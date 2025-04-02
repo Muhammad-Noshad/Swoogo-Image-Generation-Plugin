@@ -882,31 +882,23 @@
             }
           },
 
-          async uploadImage(accessToken, userId, imageFile) {
+          async uploadImage(accessToken, userId, imageBlob) {
             try {
-              const response = await fetch(
-                `${config.API_URL}/linkedin/upload-image`,
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ accessToken, userId }),
-                }
-              );
+              const formData = new FormData();
+
+              formData.append("accessToken", accessToken);
+              formData.append("userId", userId);
+              formData.append("image", imageBlob, "image.png")
+              
+              const response = await fetch(`${config.API_URL}/linkedin/upload-image`, { method: "POST", body: formData, });
 
               const data = await response.json();
-              if (!response.ok)
-                throw new Error(data.error || "Failed to register upload");
+              
+              if (!response.ok) throw new Error(data.error || "Upload failed");
 
               const { uploadUrl, assetId } = data;
-
-              const uploadResponse = await fetch(uploadUrl, {
-                method: "PUT",
-                headers: { "Content-Type": imageFile.type },
-                body: imageFile,
-              });
-
-              if (!uploadResponse.ok) throw new Error("Failed to upload image");
-
+              console.log("Upload URL", uploadUrl);
+              
               return assetId;
             } catch (error) {
               console.error("Error uploading image:", error);
