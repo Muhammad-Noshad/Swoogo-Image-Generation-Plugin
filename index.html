@@ -541,8 +541,10 @@
               helpers.changeState("liUserId", liUserId);
             }
 
-            const blob = ui.downloadEventAsImage(true);
-            console.log("RESULTANT", blob);
+            const dataUrl = await ui.downloadEventAsImage(true);
+            console.log("RESULTANT", dataUrl);
+            const blob = helpers.dataURLToBlob(dataUrl);
+            console.log("Blob", blob);
 
             // state.liAssetId = await api.uploadImage(
             //   state.liToken,
@@ -716,13 +718,10 @@
               }
             }
 
-            const dtiRes = domtoimage
+            domtoimage
               .toPng(elements.eventContent, { quality: 1 })
               .then(function (dataUrl) {
-                if (returnDataUrl) {
-                  console.log("Returning:", dataUrl)
-                  return dataUrl;
-                } else {
+                if (!returnDataUrl) {
                   const link = document.createElement("a");
                   link.download =
                     !removedProfileImage && profileImage
@@ -731,8 +730,6 @@
                   link.href = dataUrl;
                   link.click();
                 }
-
-                console.log("DTI RES", dtiRes);
 
                 hoverContent.style.display = originalStates.hoverContent;
                 if (noImagePlaceholder)
@@ -748,6 +745,10 @@
                   } else {
                     profileImageParent.appendChild(profileImage);
                   }
+                }
+
+                if (returnDataUrl) {
+                  return dataUrl;
                 }
               })
               .catch(function (error) {
