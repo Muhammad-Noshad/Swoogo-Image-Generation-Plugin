@@ -681,7 +681,7 @@
             if (placeholder) placeholder.remove();
           },
 
-          downloadEventAsImage(returnBlob = false) {
+          downloadEventAsImage(returnDataUrl = false) {
             const hoverContent = document.querySelector(
               ".share-event-hover-content"
             );
@@ -716,13 +716,11 @@
               }
             }
 
-            domtoimage
+            const dtiRes = domtoimage
               .toPng(elements.eventContent, { quality: 1 })
               .then(function (dataUrl) {
-                if (returnBlob) {
-                  const blob = helpers.dataURLToBlob(dataUrl);
-                  console.log("Returning Blob:", blob);
-                  return blob;
+                if (returnDataUrl) {
+                  return dataUrl;
                 } else {
                   const link = document.createElement("a");
                   link.download =
@@ -732,6 +730,8 @@
                   link.href = dataUrl;
                   link.click();
                 }
+
+                console.log("DTI RES", dtiRes);
 
                 hoverContent.style.display = originalStates.hoverContent;
                 if (noImagePlaceholder)
