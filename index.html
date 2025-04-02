@@ -541,10 +541,8 @@
               helpers.changeState("liUserId", liUserId);
             }
 
-            ui.downloadEventAsImage(true).then((blob) => {
-              console.log("RESULTANT", blob);
-            });
-
+            const blob = ui.downloadEventAsImage(true);
+            console.log("RESULTANT", blob);
 
             // state.liAssetId = await api.uploadImage(
             //   state.liToken,
