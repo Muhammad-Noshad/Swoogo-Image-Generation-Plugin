@@ -490,6 +490,7 @@
               const croppedCanvas = cropper.getCroppedCanvas();
               if (croppedCanvas) {
                 const croppedImage = croppedCanvas.toDataURL();
+                helpers.changeState("registrantProfilePicture", croppedImage);
                 ui.setProfileImage(croppedImage);
               }
               document.body.removeChild(cropperModal);
