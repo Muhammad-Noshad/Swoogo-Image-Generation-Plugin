@@ -621,6 +621,7 @@
             elements.profileImage.style.display = "none";
             elements.hoverOverlay.style.display = "none";
             helpers.changeState("hasProfileImage", false);
+            helpers.changeState("registrantProfilePicture", null);
 
             const existingPlaceholder = document.querySelector(
               ".no-image-placeholder"
