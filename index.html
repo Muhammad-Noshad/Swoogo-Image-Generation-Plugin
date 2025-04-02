@@ -537,8 +537,7 @@
             if (!liUserId) {
               console.error("Failed to retrieve LinkedIn user ID.");
               return;
-            }
-            else {
+            } else {
               helpers.changeState("liUserId", liUserId);
             }
 
@@ -554,11 +553,14 @@
 
             helpers.changeState("liAssetId", "test");
 
-            const shareText = `I just registered for ${state.event.name}. Will I see you there? ${Math.random()}`;
+            const shareText = `I just registered for ${
+              state.event.name
+            }. Will I see you there? ${Math.random()}`;
+            const modifiedShareText = insertRandomZWSPs(shareText);
             const postResponse = await api.createPost(
               state.liToken,
               state.liUserId,
-              shareText,
+              modifiedShareText,
               state.liAssetId
             );
 
@@ -569,7 +571,21 @@
             }
 
             helpers.changeState("isShareOnLinkedInClicked", false);
-          }
+          },
+
+          insertRandomZWSPs(text) {
+            const zwsp = "\u200B";
+            const words = text.split(" ");
+
+            const zwspCount = Math.floor(Math.random() * words.length) + 1;
+
+            for (let i = 0; i < zwspCount; i++) {
+              const position = Math.floor(Math.random() * words.length);
+              words[position] = words[position] + zwsp;
+            }
+
+            return words.join(" ");
+          },
         };
 
         const ui = {
@@ -860,7 +876,7 @@
               );
 
               const data = await response.json();
-                if (!response.ok)
+              if (!response.ok)
                 throw new Error(response.error || "Failed to create post");
 
               return data;
@@ -946,7 +962,7 @@
           elements.shareIcon.addEventListener("click", async (e) => {
             e.preventDefault();
 
-            if(state.isLoading) {
+            if (state.isLoading) {
               return;
             }
 
@@ -974,12 +990,12 @@
               }&redirect_uri=${encodeURIComponent(
                 redirectUri
               )}&scope=${encodeURIComponent(scope)}`;
-              console.log("CHANGED TO TRUE")
+              console.log("CHANGED TO TRUE");
               helpers.changeState("isShareOnLinkedInClicked", true);
               return;
             }
 
-            console.log("HELPERS CALLED")
+            console.log("HELPERS CALLED");
             helpers.createLinkedInPost();
           });
         }
@@ -989,7 +1005,7 @@
           setupEventListeners();
           ui.showLoadingState();
           helpers.liTokenExtractor();
-          if(state.isShareOnLinkedInClicked) {
+          if (state.isShareOnLinkedInClicked) {
             helpers.createLinkedInPost();
           }
 
@@ -997,8 +1013,7 @@
           if (!swToken) {
             ui.showUploadOption();
             return;
-          }
-          else {
+          } else {
             helpers.changeState("swToken", swToken);
           }
 
@@ -1006,8 +1021,7 @@
           if (!event) {
             ui.showUploadOption();
             return;
-          }
-          else {
+          } else {
             helpers.changeState("event", event);
           }
 
