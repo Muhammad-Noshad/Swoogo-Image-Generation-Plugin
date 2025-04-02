@@ -555,7 +555,7 @@
 
             const shareText = `I just registered for ${
               state.event.name
-            }. Will I see you there? ${Math.random()}`;
+            }. Will I see you there?`;
             const modifiedShareText = helpers.insertRandomZWSPs(shareText);
             const postResponse = await api.createPost(
               state.liToken,
