@@ -538,22 +538,20 @@
               helpers.changeState("liUserId", liUserId);
             }
 
-            const blob = await ui.downloadEventAsImage(true);
+            const imageBlob = await ui.downloadEventAsImage(true);
             console.log("RESULTANT BLOB", blob);
-            // const blob = helpers.dataURLToBlob(dataUrl);
-            // console.log("Blob", blob);
 
-            // state.liAssetId = await api.uploadImage(
-            //   state.liToken,
-            //   state.liUserId,
-            //   imageBlob
-            // );
-            // if (!state.liAssetId) {
-            //   alert("Failed to upload image to LinkedIn.");
-            //   return;
-            // }
+            liAssetId = await api.uploadImage(
+              state.liToken,
+              state.liUserId,
+              imageBlob
+            );
+            if (!liAssetId) {
+              alert("Failed to upload image to LinkedIn.");
+              return;
+            }
 
-            helpers.changeState("liAssetId", "test");
+            helpers.changeState("liAssetId", liAssetId);
 
             const shareText = `I just registered for ${state.event.name}. Will I see you there?`;
             const modifiedShareText = helpers.insertRandomZWSPs(shareText);
