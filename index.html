@@ -969,9 +969,12 @@
               }&redirect_uri=${encodeURIComponent(
                 redirectUri
               )}&scope=${encodeURIComponent(scope)}`;
+              console.log("CHANGED TO TRUE")
+              helpers.changeState("isShareOnLinkedInClicked", true);
             }
 
-            helpers.changeState("isShareOnLinkedInClicked", true);
+            console.log("HELPERS CALLED")
+            helpers.createLinkedInPost();
           });
         }
 
