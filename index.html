@@ -491,6 +491,7 @@
               if (croppedCanvas) {
                 const croppedImage = croppedCanvas.toDataURL();
                 helpers.changeState("registrantProfilePicture", croppedImage);
+                helpers.changeState("hasProfileImage", true);
                 ui.setProfileImage(croppedImage);
               }
               document.body.removeChild(cropperModal);
@@ -753,6 +754,7 @@
 
             if (registrantProfilePicture) {
               ui.setProfileImage(registrantProfilePicture);
+              helpers.changeState("hasProfileImage", true);
             } else {
               ui.showUploadOption();
             }
