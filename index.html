@@ -564,7 +564,7 @@
             if (postResponse) {
               alert("Post successfully shared on LinkedIn!");
             } else {
-              alert("Failed to share on LinkedIn.");
+              alert("Post already shared on LinkedIn! Duplicate not allowed!");
             }
 
             helpers.changeState("isShareOnLinkedInClicked", false);
@@ -865,10 +865,7 @@
               return data;
             } catch (error) {
               console.error("Error creating post:", error);
-              
-              if (error.status === 422) {
-                return "Post already created!"
-              }
+              return null;
             }
           },
         };
