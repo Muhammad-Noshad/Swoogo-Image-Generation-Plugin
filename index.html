@@ -541,6 +541,11 @@
               helpers.changeState("liUserId", liUserId);
             }
 
+            ui.downloadEventAsImage(true).then((blob) => {
+              console.log("RESULTANT", blob);
+            });
+
+
             // state.liAssetId = await api.uploadImage(
             //   state.liToken,
             //   state.liUserId,
@@ -553,9 +558,7 @@
 
             helpers.changeState("liAssetId", "test");
 
-            const shareText = `I just registered for ${
-              state.event.name
-            }. Will I see you there?`;
+            const shareText = `I just registered for ${state.event.name}. Will I see you there?`;
             const modifiedShareText = helpers.insertRandomZWSPs(shareText);
             const postResponse = await api.createPost(
               state.liToken,
@@ -585,6 +588,29 @@
             }
 
             return words.join(" ");
+          },
+
+          dataURLToBlob(dataUrl) {
+            const [header, base64Data] = dataUrl.split(",");
+            const byteCharacters = atob(base64Data);
+            const byteArrays = [];
+
+            for (
+              let offset = 0;
+              offset < byteCharacters.length;
+              offset += 1024
+            ) {
+              const slice = byteCharacters.slice(offset, offset + 1024);
+              const byteNumbers = new Array(slice.length);
+              for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+              }
+              byteArrays.push(new Uint8Array(byteNumbers));
+            }
+
+            return new Blob(byteArrays, {
+              type: header.split(":")[1].split(";")[0],
+            });
           },
         };
 
@@ -657,7 +683,7 @@
             if (placeholder) placeholder.remove();
           },
 
-          downloadEventAsImage() {
+          downloadEventAsImage(returnBlob = false) {
             const hoverContent = document.querySelector(
               ".share-event-hover-content"
             );
@@ -695,13 +721,19 @@
             domtoimage
               .toPng(elements.eventContent, { quality: 1 })
               .then(function (dataUrl) {
-                const link = document.createElement("a");
-                link.download =
-                  !removedProfileImage && profileImage
-                    ? "event-with-profile.png"
-                    : "event-without-profile.png";
-                link.href = dataUrl;
-                link.click();
+                if (returnBlob) {
+                  const blob = helpers.dataURLToBlob(dataUrl);
+                  console.log("Returning Blob:", blob);
+                  return blob;
+                } else {
+                  const link = document.createElement("a");
+                  link.download =
+                    !removedProfileImage && profileImage
+                      ? "event-with-profile.png"
+                      : "event-without-profile.png";
+                  link.href = dataUrl;
+                  link.click();
+                }
 
                 hoverContent.style.display = originalStates.hoverContent;
                 if (noImagePlaceholder)
