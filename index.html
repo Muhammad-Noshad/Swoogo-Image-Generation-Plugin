@@ -6,6 +6,10 @@
     <title>Swoogo Image Generation Plugin</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    />
     <style>
       @font-face {
         font-family: "RigShaded";
@@ -506,7 +510,6 @@
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get("token");
             helpers.changeState("liToken", token);
-            console.log("Token:", token);
             window.history.replaceState(null, "", window.location.pathname);
           },
 
@@ -516,8 +519,6 @@
 
           getState() {
             res = JSON.parse(sessionStorage.getItem("state"));
-
-            console.log("State:", res);
 
             if (res) {
               state = res;
@@ -544,7 +545,6 @@
             }
 
             const imageBlob = await ui.downloadEventAsImage(true);
-            console.log("RESULTANT BLOB", imageBlob);
 
             const liAssetId = await api.uploadImage(
               state.liToken,
@@ -557,7 +557,6 @@
             }
 
             helpers.changeState("liAssetId", liAssetId);
-            console.log("Asset ID:", liAssetId);
 
             const shareText = `I just registered for ${state.event.name}. Will I see you there?`;
             const modifiedShareText = helpers.insertRandomZWSPs(shareText);
@@ -968,12 +967,10 @@
               }&redirect_uri=${encodeURIComponent(
                 redirectUri
               )}&scope=${encodeURIComponent(scope)}`;
-              console.log("CHANGED TO TRUE");
               helpers.changeState("isShareOnLinkedInClicked", true);
               return;
             }
 
-            console.log("HELPERS CALLED");
             helpers.createLinkedInPost();
           });
         }
