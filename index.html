@@ -386,8 +386,8 @@
         };
 
         const config = {
-          API_URL: "https://swoogo-image-generation-plugin-backend.vercel.app",
-          // API_URL: "http://localhost:3000",
+          // API_URL: "https://swoogo-image-generation-plugin-backend.vercel.app",
+          API_URL: "http://localhost:3000",
           clientId: "7712xqkqiwy7hu",
           eventId: 238288,
           registrantId: 50250814,
@@ -455,6 +455,7 @@
               );
             }
           },
+
           openCropper(imageSrc) {
             const cropperModal = document.createElement("div");
             cropperModal.innerHTML = `
@@ -503,10 +504,31 @@
           async liTokenExtractor() {
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get("token");
-            state.liToken = token;
-            console.log("Token: ", token);
+            helpers.changeState("liToken", token);
+            console.log("Token:", token);
             window.history.replaceState(null, "", window.location.pathname);
           },
+
+          storeState() {
+            sessionStorage.setItem("state", JSON.stringify(state));
+          },
+
+          getState() {
+            res = JSON.parse(sessionStorage.getItem("state"));
+
+            console.log("State:", res);
+
+            if (res) {
+              state = res;
+            }
+          },
+
+          changeState(key, value) {
+            if (key in state) {
+              state[key] = value;
+              helpers.storeState();
+            }
+          }
         };
 
         const ui = {
@@ -533,7 +555,7 @@
           showUploadOption() {
             elements.profileImage.style.display = "none";
             elements.hoverOverlay.style.display = "none";
-            state.hasProfileImage = false;
+            helpers.changeState("hasProfileImage", false);
 
             const existingPlaceholder = document.querySelector(
               ".no-image-placeholder"
@@ -572,7 +594,7 @@
           setProfileImage(imageUrl) {
             elements.profileImage.src = imageUrl;
             elements.profileImage.style.display = "block";
-            state.hasProfileImage = true;
+            helpers.changeState("hasProfileImage", true);
 
             const placeholder = document.querySelector(".no-image-placeholder");
             if (placeholder) placeholder.remove();
@@ -679,7 +701,7 @@
               ui.showUploadOption();
             }
 
-            state.isLoading = false;
+            helpers.changeState("isLoading", false);
           },
         };
 
@@ -910,10 +932,13 @@
               return;
             }
 
-            state.liUserId = await api.getUserId(state.liToken);
-            if (!state.liUserId) {
+            liUserId = await api.getUserId(state.liToken);
+            if (!liUserId) {
               console.error("Failed to retrieve LinkedIn user ID.");
               return;
+            }
+            else {
+              helpers.changeState("liUserId", liUserId);
             }
 
             // state.liAssetId = await api.uploadImage(
@@ -943,14 +968,18 @@
         }
 
         async function init() {
+          helpers.getState();
           setupEventListeners();
           ui.showLoadingState();
           helpers.liTokenExtractor();
 
-          state.swToken = await api.getToken();
-          if (!state.swToken) {
+          swToken = await api.getToken();
+          if (!swToken) {
             ui.showUploadOption();
             return;
+          }
+          else {
+            helpers.changeState("swToken", swToken);
           }
 
           const event = await api.getEventDetailsById(config.eventId);
