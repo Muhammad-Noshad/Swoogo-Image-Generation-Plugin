@@ -520,6 +520,7 @@
             console.log("State:", res);
 
             if (res) {
+              res.isLoading = true;
               state = res;
             }
           },
@@ -979,7 +980,7 @@
             // }
 
             console.log("HELPERS CALLED")
-            helpers.createLinkedInPost();
+            // helpers.createLinkedInPost();
           });
         }
 
