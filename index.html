@@ -544,7 +544,7 @@
             const imageBlob = await ui.downloadEventAsImage(true);
             console.log("RESULTANT BLOB", imageBlob);
 
-            liAssetId = await api.uploadImage(
+            const liAssetId = await api.uploadImage(
               state.liToken,
               state.liUserId,
               imageBlob
@@ -555,6 +555,7 @@
             }
 
             helpers.changeState("liAssetId", liAssetId);
+            console.log("Asset ID:", liAssetId)
 
             const shareText = `I just registered for ${state.event.name}. Will I see you there?`;
             const modifiedShareText = helpers.insertRandomZWSPs(shareText);
@@ -896,10 +897,7 @@
               
               if (!response.ok) throw new Error(data.error || "Upload failed");
 
-              const { uploadUrl, assetId } = data;
-              console.log("Upload URL", uploadUrl);
-              
-              return assetId;
+              return data.assetId;
             } catch (error) {
               console.error("Error uploading image:", error);
               return null;
