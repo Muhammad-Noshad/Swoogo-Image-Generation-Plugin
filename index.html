@@ -6,7 +6,10 @@
     <title>Swoogo Image Generation Plugin</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    />
     <style>
       @font-face {
         font-family: "RigShaded";
@@ -691,13 +694,16 @@
             }
 
             try {
-              const dataUrl = await domtoimage.toPng(elements.eventContent, { quality: 1 });
+              const dataUrl = await domtoimage.toPng(elements.eventContent, {
+                quality: 1,
+              });
 
               if (!returnDataUrl) {
                 const link = document.createElement("a");
-                link.download = removedProfileImage || !profileImage 
-                  ? "event-without-profile.png" 
-                  : "event-with-profile.png";
+                link.download =
+                  removedProfileImage || !profileImage
+                    ? "event-without-profile.png"
+                    : "event-with-profile.png";
                 link.href = dataUrl;
                 link.click();
               } else {
@@ -705,23 +711,30 @@
                 return await response.blob();
               }
             } catch (error) {
-              console.error("An error occurred while generating the image:", error);
+              console.error(
+                "An error occurred while generating the image:",
+                error
+              );
               throw error;
             } finally {
               hoverContent.style.display = originalStates.hoverContent;
               if (noImagePlaceholder) {
-                noImagePlaceholder.style.display = originalStates.noImagePlaceholder;
+                noImagePlaceholder.style.display =
+                  originalStates.noImagePlaceholder;
               }
 
               if (removedProfileImage && profileImageParent) {
                 if (profileImageNextSibling) {
-                  profileImageParent.insertBefore(profileImage, profileImageNextSibling);
+                  profileImageParent.insertBefore(
+                    profileImage,
+                    profileImageNextSibling
+                  );
                 } else {
                   profileImageParent.appendChild(profileImage);
                 }
               }
             }
-          
+
             // domtoimage
             //   .toPng(elements.eventContent, { quality: 1 })
             //   .then(function (dataUrl) {
@@ -882,17 +895,17 @@
 
               const data = await response.json();
               if (!response.ok)
-                throw new Error(
-                  data.error || "Failed to register image upload"
-                );
+                throw new Error(data.error || "Failed to register upload");
 
               const { uploadUrl, assetId } = data;
 
-              await fetch(uploadUrl, {
+              const uploadResponse = await fetch(uploadUrl, {
                 method: "PUT",
                 headers: { "Content-Type": imageFile.type },
                 body: imageFile,
               });
+
+              if (!uploadResponse.ok) throw new Error("Failed to upload image");
 
               return assetId;
             } catch (error) {
