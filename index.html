@@ -461,7 +461,10 @@
               })
               .catch((err) => {
                 console.error("Could not copy text: ", err);
-                ui.showToast("Could not copy text to clipboard! Please copy the text manually.", "red");
+                ui.showToast(
+                  "Could not copy text to clipboard! Please copy the text manually.",
+                  "red"
+                );
               });
 
             const socialUrls = {
@@ -476,7 +479,10 @@
             if (socialUrls[platform]) {
               window.open(socialUrls[platform], "_blank");
             } else {
-              ui.showToast("Unable to open the social media platform! Please open it manually and paste the copied text.", "red")
+              ui.showToast(
+                "Unable to open the social media platform! Please open it manually and paste the copied text.",
+                "red"
+              );
             }
           },
 
@@ -589,9 +595,9 @@
             );
 
             if (postResponse) {
-              ui.showToast("Post successfully shared on LinkedIn!", "green")
+              ui.showToast("Post successfully shared on LinkedIn!", "green");
             } else {
-              ui.showToast("Failed to post on LinkedIn!", "red")
+              ui.showToast("Failed to post on LinkedIn!", "red");
             }
 
             helpers.changeState("isShareOnLinkedInClicked", false);
@@ -615,7 +621,8 @@
             e?.preventDefault();
 
             if (state.isLoading) {
-              ui.showToast("Loading event, please wait...", "green")
+              ui.showToast("Loading event, please wait...", "red");
+              return;
             }
 
             if (!state.swToken) {
