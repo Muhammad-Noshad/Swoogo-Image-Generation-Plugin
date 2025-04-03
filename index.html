@@ -26,6 +26,28 @@
         font-style: normal;
       }
 
+      .toast {
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px 25px;
+        border-radius: 5px;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        z-index: 1000;
+      }
+
+      .toast.red {
+        background-color: red;
+      }
+
+      .toast.green {
+        background-color: green;
+      }
+
       .share-event,
       .share-event * {
         margin: 0;
@@ -299,6 +321,7 @@
     </style>
   </head>
   <body>
+    <div id="toast" class="toast"></div>
     <section class="share-event">
       <div class="share-event-header">
         <h3>Share you are attending</h3>
@@ -318,7 +341,11 @@
       <div class="share-event-content" id="eventContent">
         <div class="share-event-hover-content">
           <div class="images-section">
-            <img src="./images/linkindin.svg" alt="linkedin-img" />
+            <img
+              src="./images/linkindin.svg"
+              id="linkedin-img"
+              alt="linkedin-img"
+            />
             <img src="./images/instagram.svg" alt="instagram-img" />
             <img src="./images/twitter.svg" alt="twitter-img" />
             <img src="./images/whatsapp.svg" alt="whatsapp-img" />
@@ -387,7 +414,6 @@
 
         const config = {
           API_URL: "https://swoogo-image-generation-plugin-backend.vercel.app",
-          // API_URL: "http://localhost:3000",
           clientId: "7712xqkqiwy7hu",
           eventId: 238288,
           registrantId: 50250814,
@@ -435,10 +461,7 @@
               })
               .catch((err) => {
                 console.error("Could not copy text: ", err);
-                alert(
-                  "Could not copy text to clipboard. Please copy this text manually:\n\n" +
-                    shareText
-                );
+                ui.showToast("Could not copy text to clipboard! Please copy the text manually.", "red");
               });
 
             const socialUrls = {
@@ -453,9 +476,7 @@
             if (socialUrls[platform]) {
               window.open(socialUrls[platform], "_blank");
             } else {
-              alert(
-                `Please manually open ${platform} and paste the copied text.`
-              );
+              ui.showToast("Unable to open the social media platform! Please open it manually and paste the copied text.", "red")
             }
           },
 
@@ -552,7 +573,7 @@
               imageBlob
             );
             if (!liAssetId) {
-              alert("Failed to upload image to LinkedIn.");
+              ui.showToast("Failed to upload image to Linkedin!", "red");
               return;
             }
 
@@ -568,9 +589,9 @@
             );
 
             if (postResponse) {
-              alert("Post successfully shared on LinkedIn!");
+              ui.showToast("Post successfully shared on LinkedIn!", "green")
             } else {
-              alert("Failed to post on LinkedIn!");
+              ui.showToast("Failed to post on LinkedIn!", "red")
             }
 
             helpers.changeState("isShareOnLinkedInClicked", false);
@@ -588,6 +609,32 @@
             }
 
             return words.join(" ");
+          },
+
+          async shareOnLinkedIn(e) {
+            e?.preventDefault();
+
+            if (state.isLoading) {
+              ui.showToast("Loading event, please wait...", "green")
+            }
+
+            if (!state.swToken) {
+              return;
+            }
+
+            if (!state.liToken) {
+              const redirectUri = `${config.API_URL}/auth/callback`;
+              const scope = "w_member_social openid profile email";
+              window.location.href = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${
+                config.clientId
+              }&redirect_uri=${encodeURIComponent(
+                redirectUri
+              )}&scope=${encodeURIComponent(scope)}`;
+              helpers.changeState("isShareOnLinkedInClicked", true);
+              return;
+            }
+
+            helpers.createLinkedInPost();
           },
         };
 
@@ -756,6 +803,17 @@
             }
 
             helpers.changeState("isLoading", false);
+          },
+
+          showToast(message, color) {
+            let toast = document.getElementById("toast");
+            toast.className = "toast " + color;
+            toast.innerText = message;
+            toast.style.display = "block";
+
+            setTimeout(() => {
+              toast.style.display = "none";
+            }, 3000);
           },
         };
 
@@ -940,6 +998,8 @@
           };
 
           Object.entries(socialIcons).forEach(([platform, icon]) => {
+            if (platform === "linkedin") return;
+
             if (icon) {
               icon.addEventListener("click", (e) => {
                 e.preventDefault();
@@ -948,30 +1008,12 @@
             }
           });
 
-          elements.shareIcon.addEventListener("click", async (e) => {
-            e.preventDefault();
+          socialIcons.linkedin.addEventListener("click", (e) => {
+            helpers.shareOnLinkedIn(e);
+          });
 
-            if (state.isLoading) {
-              return;
-            }
-
-            if (!state.swToken) {
-              return;
-            }
-
-            if (!state.liToken) {
-              const redirectUri = `${config.API_URL}/auth/callback`;
-              const scope = "w_member_social openid profile email";
-              window.location.href = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${
-                config.clientId
-              }&redirect_uri=${encodeURIComponent(
-                redirectUri
-              )}&scope=${encodeURIComponent(scope)}`;
-              helpers.changeState("isShareOnLinkedInClicked", true);
-              return;
-            }
-
-            helpers.createLinkedInPost();
+          elements.shareIcon.addEventListener("click", (e) => {
+            helpers.shareOnLinkedIn(e);
           });
         }
 
