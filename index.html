@@ -1044,11 +1044,11 @@
           const isFound = helpers.getState();
           setupEventListeners();
           console.log(isFound);
-          if (isFound && !isFound.isLoading) {
+          if (isFound && !state.isLoading) {
             ui.setupEventData(
-              isFound.event,
-              isFound.registrantDetails,
-              isFound.registrantProfilePicture
+              state.event,
+              state.registrantDetails,
+              state.registrantProfilePicture
             );
             return;
           } else {
