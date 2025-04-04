@@ -1044,12 +1044,13 @@
           const isFound = helpers.getState();
           setupEventListeners();
           console.log(isFound);
-          if (isFound) {
+          if (isFound && !isFound.isLoading) {
             ui.setupEventData(
               isFound.event,
               isFound.registrantDetails,
               isFound.registrantProfilePicture
             );
+            return;
           } else {
             ui.showLoadingState();
           }
@@ -1058,59 +1059,50 @@
             helpers.createLinkedInPost();
           }
 
-          if (!isFound) {
-            const swToken = await api.getToken();
-            if (!swToken) {
-              ui.showUploadOption();
-              return;
-            } else {
-              helpers.changeState("swToken", swToken);
-            }
-
-            const event = await api.getEventDetailsById(config.eventId);
-            if (!event) {
-              ui.showUploadOption();
-              return;
-            } else {
-              helpers.changeState("event", event);
-            }
-
-            const registrants = await api.getRegistrantsByEventId(
-              config.eventId
-            );
-            if (!registrants.length) {
-              ui.showUploadOption();
-              return;
-            }
-
-            const registrantDetails = await api.getRegistrantDetailsById(
-              config.registrantId
-            );
-            if (!registrantDetails) {
-              ui.showUploadOption();
-              return;
-            } else {
-              helpers.changeState("registrantDetails", registrantDetails);
-            }
-
-            const registrantProfilePicture =
-              await api.getObjectAssetsByObjectId(
-                "registrant",
-                config.registrantId,
-                "profile_picture"
-              );
-
-            helpers.changeState(
-              "registrantProfilePicture",
-              registrantProfilePicture
-            );
-
-            ui.setupEventData(
-              event,
-              registrantDetails,
-              registrantProfilePicture
-            );
+          const swToken = await api.getToken();
+          if (!swToken) {
+            ui.showUploadOption();
+            return;
+          } else {
+            helpers.changeState("swToken", swToken);
           }
+
+          const event = await api.getEventDetailsById(config.eventId);
+          if (!event) {
+            ui.showUploadOption();
+            return;
+          } else {
+            helpers.changeState("event", event);
+          }
+
+          const registrants = await api.getRegistrantsByEventId(config.eventId);
+          if (!registrants.length) {
+            ui.showUploadOption();
+            return;
+          }
+
+          const registrantDetails = await api.getRegistrantDetailsById(
+            config.registrantId
+          );
+          if (!registrantDetails) {
+            ui.showUploadOption();
+            return;
+          } else {
+            helpers.changeState("registrantDetails", registrantDetails);
+          }
+
+          const registrantProfilePicture = await api.getObjectAssetsByObjectId(
+            "registrant",
+            config.registrantId,
+            "profile_picture"
+          );
+
+          helpers.changeState(
+            "registrantProfilePicture",
+            registrantProfilePicture
+          );
+
+          ui.setupEventData(event, registrantDetails, registrantProfilePicture);
         }
 
         init();
