@@ -1127,6 +1127,8 @@
           });
 
           elements.liPostBtn.addEventListener("click", async () => {
+            elements.liPostBtn.setAttribute("disabled");
+
             const postResponse = await api.createPost(
               state.liToken,
               state.liUserId,
@@ -1141,6 +1143,7 @@
             }
 
             helpers.changeState("isShareOnLinkedInClicked", false);
+            elements.liPostBtn.removeAttribute("disabled");
             ui.hideModal();
           });
         }
