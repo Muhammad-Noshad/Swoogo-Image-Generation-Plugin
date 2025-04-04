@@ -469,7 +469,7 @@
             navigator.clipboard
               .writeText(shareText)
               .then(() => {
-                console.log("Share text copied to clipboard");
+                ui.showToast("Share text copied to clipboard!", "green");
               })
               .catch((err) => {
                 console.error("Could not copy text: ", err);
@@ -830,7 +830,6 @@
             let toast = document.getElementById("toast");
             toast.className = "toast " + color + " show";
             toast.innerText = message;
-            console.log(message, color);
 
             setTimeout(() => {
               toast.classList.add("hide");
