@@ -1050,13 +1050,17 @@
               state.registrantDetails,
               state.registrantProfilePicture
             );
+            
+            helpers.liTokenExtractor();
+            
+            if (state.isShareOnLinkedInClicked) {
+              helpers.createLinkedInPost();
+            }
+
             return;
           } else {
             ui.showLoadingState();
-          }
-          helpers.liTokenExtractor();
-          if (state.isShareOnLinkedInClicked) {
-            helpers.createLinkedInPost();
+            helpers.liTokenExtractor();
           }
 
           const swToken = await api.getToken();
