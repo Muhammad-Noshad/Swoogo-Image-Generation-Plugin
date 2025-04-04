@@ -1127,7 +1127,7 @@
           });
 
           elements.liPostBtn.addEventListener("click", async () => {
-            elements.liPostBtn.setAttribute("disabled");
+            elements.liPostBtn.setAttribute("disabled", "true");
 
             const postResponse = await api.createPost(
               state.liToken,
