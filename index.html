@@ -1043,7 +1043,7 @@
         async function init() {
           const isFound = helpers.getState();
           setupEventListeners();
-          console.log(isFound);
+          console.log(state);
           if (isFound && !state.isLoading) {
             ui.setupEventData(
               state.event,
