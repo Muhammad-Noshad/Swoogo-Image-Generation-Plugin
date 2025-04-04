@@ -609,10 +609,8 @@
 
             if (postResponse) {
               ui.showToast("Post successfully shared on LinkedIn!", "green");
-              setTimeout(() => {
-                const linkedInPostUrl = `https://www.linkedin.com/feed/update/${postResponse.id}`;
-                window.open(linkedInPostUrl, '_blank');
-              }, 3000);
+              const linkedInPostUrl = `https://www.linkedin.com/feed/update/${postResponse.id}`;
+              window.open(linkedInPostUrl, '_blank');
             } else {
               ui.showToast("Failed to post on LinkedIn!", "red");
             }
