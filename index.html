@@ -1045,9 +1045,9 @@
           setupEventListeners();
           if (isFound) {
             ui.setupEventData(
-              state.event,
-              state.registrantDetails,
-              state.registrantProfilePicture
+              isFound.event,
+              isFound.registrantDetails,
+              isFound.registrantProfilePicture
             );
           } else {
             ui.showLoadingState();
