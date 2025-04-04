@@ -609,6 +609,10 @@
 
             if (postResponse) {
               ui.showToast("Post successfully shared on LinkedIn!", "green");
+              setTimeout(() => {
+                const linkedInPostUrl = `https://www.linkedin.com/feed/update/${postResponse.id}`;
+                window.open(linkedInPostUrl, '_blank');
+              }, 3000);
             } else {
               ui.showToast("Failed to post on LinkedIn!", "red");
             }
@@ -949,7 +953,7 @@
               if (!response.ok)
                 throw new Error(response.error || "Failed to create post");
 
-              return data;
+              return data?.postResponse;
             } catch (error) {
               console.error("Error creating post:", error);
               return null;
@@ -1043,7 +1047,7 @@
         async function init() {
           const isFound = helpers.getState();
           setupEventListeners();
-          console.log(state);
+
           if (isFound && !state.isLoading) {
             ui.setupEventData(
               state.event,
