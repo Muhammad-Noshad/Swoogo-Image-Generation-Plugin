@@ -831,6 +831,7 @@
             let toast = document.getElementById("toast");
             toast.className = "toast " + color + " show";
             toast.innerText = message;
+            console.log(message);
 
             setTimeout(() => {
               toast.classList.add("hide");
