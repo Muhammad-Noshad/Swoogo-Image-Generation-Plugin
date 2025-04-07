@@ -606,6 +606,7 @@
           liAssetURL: null,
           liShareText: null,
           isLoading: true,
+          colorScheme: "orange",
         };
 
         const helpers = {
@@ -1002,6 +1003,19 @@
             elements.liPostText.textContent = "";
             elements.liPostImg.setAttribute("src", "");
           },
+
+          changeColorScheme(color) {
+            const root = document.documentElement;
+            const primary = getComputedStyle(root).getPropertyValue(`--${color}`).trim();
+            const secondary = getComputedStyle(root).getPropertyValue(`--${color}-light`).trim();
+            const overlay = getComputedStyle(root).getPropertyValue(`--${color}-overlay`).trim();
+
+            root.style.setProperty("--primary", primary);
+            root.style.setProperty("--secondary", secondary);
+            root.style.setProperty("--overlay", overlay);
+
+            helpers.changeState("colorScheme", color);
+          }
         };
 
         const api = {
@@ -1234,15 +1248,7 @@
           elements.colorChoices.forEach((colorChoice) => {
             colorChoice.addEventListener("click", (e) => {
               const color = colorChoice.classList[0];
-
-              const root = document.documentElement;
-              const primary = getComputedStyle(root).getPropertyValue(`--${color}`).trim();
-              const secondary = getComputedStyle(root).getPropertyValue(`--${color}-light`).trim();
-              const overlay = getComputedStyle(root).getPropertyValue(`--${color}-overlay`).trim();
-
-              root.style.setProperty("--primary", primary);
-              root.style.setProperty("--secondary", secondary);
-              root.style.setProperty("--overlay", overlay);
+              ui.changeColorScheme(color);
             });
           });
         }
@@ -1250,6 +1256,7 @@
         async function init() {
           const isFound = helpers.getState();
           setupEventListeners();
+          ui.changeColorScheme(state.colorScheme);
 
           if (isFound && !state.isLoading) {
             ui.setupEventData(
