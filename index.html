@@ -400,7 +400,7 @@
     <div class="modal-backdrop" id="postModal">
       <div class="modal">
         <button class="close-btn" id="closeBtn">✖</button>
-        <p class="post-text"></p>
+        <p contenteditable="true" class="post-text"></p>
         <img
           class="post-img"
           alt="post-img"
@@ -1128,11 +1128,18 @@
 
           elements.liPostBtn.addEventListener("click", async () => {
             elements.liPostBtn.setAttribute("disabled", "true");
+            const shareText = elements.liPostText;
+            let modifiedShareText = state.liShareText;
+
+            if(modifiedShareText !== shareText) {
+              console.log("Running ZWSP....");
+              modifiedShareText = helpers.insertRandomZWSPs(shareText);
+            }
 
             const postResponse = await api.createPost(
               state.liToken,
               state.liUserId,
-              state.liShareText,
+              modifiedShareText,
               state.liAssetId
             );
 
@@ -1152,6 +1159,7 @@
           const isFound = helpers.getState();
           setupEventListeners();
 
+          ui.showModal("I am attending this and that see you there hopefully. I am attending this and that see you there hopefully.", "./images/share-icon");
           if (isFound && !state.isLoading) {
             ui.setupEventData(
               state.event,
