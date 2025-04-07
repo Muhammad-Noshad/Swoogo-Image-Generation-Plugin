@@ -545,7 +545,8 @@
           },
 
           shareToSocialMedia(platform) {
-            const shareText = `I just registered for ${state.event.name}. Will I see you there?`;
+            const noSpaceEventName = state.event.name.replace(/\s+/g, '').toUpperCase();
+            const shareText = `I just registered for ${state.event.name}. Will I see you there? #${noSpaceEventName}`;
 
             navigator.clipboard
               .writeText(shareText)
