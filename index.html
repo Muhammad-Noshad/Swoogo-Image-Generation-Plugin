@@ -680,9 +680,6 @@
             helpers.changeState("liAssetId", liAssetId);
 
             const shareText = `I just registered for ${state.event.name}. Will I see you there?`;
-            const modifiedShareText = helpers.insertRandomZWSPs(shareText);
-
-            helpers.changeState("liShareText", modifiedShareText);
 
             ui.showModal(shareText, imgUrl);
           },
@@ -1128,13 +1125,9 @@
 
           elements.liPostBtn.addEventListener("click", async () => {
             elements.liPostBtn.setAttribute("disabled", "true");
+            
             const shareText = elements.liPostText.textContent;
-            let modifiedShareText = state.liShareText;
-
-            if(modifiedShareText !== shareText) {
-              console.log("Running ZWSP....");
-              modifiedShareText = helpers.insertRandomZWSPs(shareText);
-            }
+            const modifiedShareText = helpers.insertRandomZWSPs(shareText);
 
             const postResponse = await api.createPost(
               state.liToken,
