@@ -30,29 +30,41 @@
         --red: #c82b2b;
         --green: #1cab1c;
 
-        --orange: #FF6000;
+        --orange: #ff6000;
         --orange-light: #ffdad4;
-        --orange-overlay: #FF600099;
+        --orange-overlay: #ff600099;
 
-        --pink: #EB338D;
-        --pink-light: #F9BED0;
-        --pink-overlay: #EB338D99;
+        --pink: #eb338d;
+        --pink-light: #f9bed0;
+        --pink-overlay: #eb338d99;
 
-        --blue: #23438B;
-        --blue-light: #D2D9F8;
-        --blue-overlay: #23438B99;
+        --blue: #23438b;
+        --blue-light: #d2d9f8;
+        --blue-overlay: #23438b99;
 
-        --yellow: #FFE608;
-        --yellow-light: #FFF9C9;
-        --yellow-overlay: #FFE60899;
+        --yellow: #ffe608;
+        --yellow-light: #fff9c9;
+        --yellow-overlay: #ffe60899;
 
-        --cyan: #50C0AE;
-        --cyan-light: #C2FCF0;
-        --cyan-overlay: #50C0AE99;
+        --cyan: #50c0ae;
+        --cyan-light: #c2fcf0;
+        --cyan-overlay: #50c0ae99;
 
         --primary: var(--orange);
         --secondary: var(--orange-light);
         --overlay: var(--orange-overlay);
+      }
+
+      svg path {
+        fill: var(--primary);
+      }
+
+      svg circle {
+        fill: var(--primary);
+      }
+
+      svg rect {
+        fill: var(--primary);
       }
 
       .toast {
@@ -108,7 +120,7 @@
         border-radius: 10px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         position: relative;
-        margin: 20px
+        margin: 20px;
       }
 
       .modal p {
@@ -466,10 +478,7 @@
       <div class="modal">
         <button class="close-btn" id="closeBtn">✖</button>
         <p contenteditable="true" class="post-text"></p>
-        <img
-          class="post-img"
-          alt="post-img"
-        />
+        <img class="post-img" alt="post-img" />
         <button class="post-btn">Post</button>
       </div>
     </div>
@@ -480,7 +489,7 @@
           <p>Choose color:</p>
           <div class="orange color-choice"></div>
           <div class="pink color-choice"></div>
-          <div class="cyan color-choice "></div>
+          <div class="cyan color-choice"></div>
           <div class="blue color-choice"></div>
           <div class="yellow color-choice"></div>
         </div>
@@ -495,14 +504,43 @@
         <h3>Share you are attending</h3>
         <div class="share-actions">
           <a href="">
-            <img src="./images/share-icon.svg" alt="share-icon" class="icon" />
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M17.4575 5.27061L11.4179 1.03654C11.2395 0.911462 11.0303 0.83773 10.8129 0.823383C10.5956 0.809035 10.3785 0.854622 10.1852 0.955176C9.992 1.05573 9.83007 1.20739 9.7171 1.39364C9.60413 1.57988 9.54445 1.79356 9.54456 2.01139V3.33553C-0.257005 6.6233 -0.524622 12.7579 0.367214 16.6672C0.525925 17.3632 1.52069 17.3479 1.6628 16.648C2.7253 11.4079 7.83194 9.92701 9.54589 9.57373V10.4795C9.54546 10.6973 9.60484 10.9111 9.71755 11.0975C9.83026 11.2839 9.99197 11.4358 10.1851 11.5367C10.3782 11.6375 10.5952 11.6834 10.8126 11.6694C11.03 11.6553 11.2394 11.5819 11.4179 11.457L17.4575 7.22295C17.6148 7.11331 17.7432 6.96729 17.8319 6.79733C17.9206 6.62737 17.9669 6.43849 17.9669 6.24678C17.9669 6.05506 17.9206 5.86619 17.8319 5.69623C17.7432 5.52627 17.6148 5.38025 17.4575 5.27061Z"
+                fill="#EF6C27"
+              />
+            </svg>
           </a>
           <a href="" id="downloadBtn">
-            <img
-              src="./images/download-icon.svg"
-              alt="download-icon"
-              class="icon"
-            />
+            <svg
+              width="19"
+              height="19"
+              viewBox="0 0 19 19"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clip-path="url(#clip0_5_87)">
+                <path
+                  d="M12.825 10.1333C12.5083 9.81666 12.0333 9.81666 11.7167 10.1333L10.2917 11.5583V2.37499C10.2917 1.89999 9.975 1.58333 9.5 1.58333C9.025 1.58333 8.70833 1.89999 8.70833 2.37499V11.5583L7.28333 10.1333C6.96667 9.81666 6.49167 9.81666 6.175 10.1333C5.85833 10.45 5.85833 10.925 6.175 11.2417L8.94583 14.0125C9.10417 14.1708 9.34167 14.25 9.5 14.25C9.65833 14.25 9.89583 14.1708 10.0542 14.0125L12.825 11.2417C13.1417 10.925 13.1417 10.3708 12.825 10.1333Z"
+                  fill="white"
+                />
+                <path
+                  d="M14.2499 17.4167H4.74992C4.27492 17.4167 3.95825 17.1 3.95825 16.625C3.95825 16.15 4.27492 15.8333 4.74992 15.8333H14.2499C14.7249 15.8333 15.0416 16.15 15.0416 16.625C15.0416 17.1 14.7249 17.4167 14.2499 17.4167Z"
+                  fill="white"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_5_87">
+                  <rect width="19" height="19" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
           </a>
         </div>
       </div>
@@ -628,7 +666,9 @@
           },
 
           shareToSocialMedia(platform) {
-            const noSpaceEventName = state.event.name.replace(/\s+/g, '').toUpperCase();
+            const noSpaceEventName = state.event.name
+              .replace(/\s+/g, "")
+              .toUpperCase();
             const shareText = `I just registered for ${state.event.name}. Will I see you there? #${noSpaceEventName}`;
 
             navigator.clipboard
@@ -763,7 +803,9 @@
 
             helpers.changeState("liAssetId", liAssetId);
 
-            const noSpaceEventName = state.event.name.replace(/\s+/g, '').toUpperCase();
+            const noSpaceEventName = state.event.name
+              .replace(/\s+/g, "")
+              .toUpperCase();
             const shareText = `I just registered for ${state.event.name}. Will I see you there? #${noSpaceEventName}`;
 
             ui.showModal(shareText, imgUrl);
@@ -1006,16 +1048,22 @@
 
           changeColorScheme(color) {
             const root = document.documentElement;
-            const primary = getComputedStyle(root).getPropertyValue(`--${color}`).trim();
-            const secondary = getComputedStyle(root).getPropertyValue(`--${color}-light`).trim();
-            const overlay = getComputedStyle(root).getPropertyValue(`--${color}-overlay`).trim();
+            const primary = getComputedStyle(root)
+              .getPropertyValue(`--${color}`)
+              .trim();
+            const secondary = getComputedStyle(root)
+              .getPropertyValue(`--${color}-light`)
+              .trim();
+            const overlay = getComputedStyle(root)
+              .getPropertyValue(`--${color}-overlay`)
+              .trim();
 
             root.style.setProperty("--primary", primary);
             root.style.setProperty("--secondary", secondary);
             root.style.setProperty("--overlay", overlay);
 
             helpers.changeState("colorScheme", color);
-          }
+          },
         };
 
         const api = {
@@ -1223,7 +1271,7 @@
 
           elements.liPostBtn.addEventListener("click", async () => {
             elements.liPostBtn.setAttribute("disabled", "true");
-            
+
             const shareText = elements.liPostText.textContent;
             const modifiedShareText = helpers.insertRandomZWSPs(shareText);
 
