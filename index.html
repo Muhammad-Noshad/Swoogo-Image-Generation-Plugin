@@ -1128,7 +1128,7 @@
 
           elements.liPostBtn.addEventListener("click", async () => {
             elements.liPostBtn.setAttribute("disabled", "true");
-            const shareText = elements.liPostText;
+            const shareText = elements.liPostText.textContent;
             let modifiedShareText = state.liShareText;
 
             if(modifiedShareText !== shareText) {
