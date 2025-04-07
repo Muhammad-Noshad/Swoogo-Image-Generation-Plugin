@@ -26,6 +26,35 @@
         font-style: normal;
       }
 
+      :root {
+        --red: #c82b2b;
+        --green: #1cab1c;
+
+        --orange: #FF6000;
+        --orange-light: #ffdad4;
+        --orange-overlay: #FF600099;
+
+        --pink: #EB338D;
+        --pink-light: #F9BED0;
+        --pink-overlay: #EB338D99;
+
+        --blue: #23438B;
+        --blue-light: #D2D9F8;
+        --blue-overlay: #23438B99;
+
+        --yellow: #FFE608;
+        --yellow-light: #FFF9C9;
+        --yellow-overlay: #FFE60899;
+
+        --cyan: #50C0AE;
+        --cyan-light: #C2FCF0;
+        --cyan-overlay: #50C0AE99;
+
+        --primary: var(--orange);
+        --secondary: var(--orange-light);
+        --overlay: var(--orange-overlay);
+      }
+
       .toast {
         position: fixed;
         top: -150vh;
@@ -42,11 +71,11 @@
       }
 
       .toast.red {
-        background-color: #c82b2b;
+        background-color: var(--red);
       }
 
       .toast.green {
-        background-color: #1cab1c;
+        background-color: var(--green);
       }
 
       .toast.show {
@@ -136,7 +165,7 @@
       }
 
       .cropper-btn {
-        background-color: #ef6c37;
+        background-color: var(--primary);
         color: #ffffff;
         padding: 10px 0;
         border: 1px solid transparent;
@@ -148,13 +177,12 @@
 
       .cropper-btn:hover {
         background-color: #ffffff;
-        color: #ef6c37;
-        border-color: #ef6c2799;
+        color: var(--primary);
+        border-color: var(--overlay);
       }
 
-      .share-event-header > h3,
-      .share-event-details > h3 {
-        color: #ef6c37;
+      .share-event-header > h3 {
+        color: var(--primary);
       }
 
       .share-event h3 {
@@ -181,7 +209,44 @@
       }
 
       .share-event a:hover {
-        color: #ef6c37;
+        color: var(--primary);
+      }
+
+      .share-event-controls > div + div {
+        margin-top: 5px;
+      }
+
+      .share-event-controls > div {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .share-event-controls > div:last-of-type {
+        margin-bottom: 10px;
+      }
+
+      .color-choice {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .orange {
+        background-color: var(--orange);
+      }
+      .pink {
+        background-color: var(--pink);
+      }
+      .cyan {
+        background-color: var(--cyan);
+      }
+      .blue {
+        background-color: var(--blue);
+      }
+      .yellow {
+        background-color: var(--yellow);
       }
 
       .share-event-header {
@@ -197,7 +262,7 @@
       }
 
       .share-event-content {
-        background-color: #ffdad4;
+        background-color: var(--secondary);
         border-radius: 25px;
         display: flex;
         gap: 30px;
@@ -289,7 +354,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: #ef6c2799;
+        background: var(--overlay);
         border-radius: 25px;
       }
 
@@ -380,7 +445,7 @@
       }
 
       .no-image-placeholder > p:hover {
-        color: #ef6c37;
+        color: var(--primary);
       }
 
       .event-share-participant-name {
@@ -410,6 +475,22 @@
     </div>
 
     <section class="share-event">
+      <div class="share-event-controls">
+        <div class="color-chooser">
+          <p>Choose color:</p>
+          <div class="orange color-choice"></div>
+          <div class="pink color-choice"></div>
+          <div class="cyan color-choice "></div>
+          <div class="blue color-choice"></div>
+          <div class="yellow color-choice"></div>
+        </div>
+        <div class="role-chooser">
+          <p>Choose your role at event:</p>
+        </div>
+        <div class="orientation-chooser">
+          <p>Choose your orientation:</p>
+        </div>
+      </div>
       <div class="share-event-header">
         <h3>Share you are attending</h3>
         <div class="share-actions">
@@ -502,6 +583,7 @@
           liPostText: document.querySelector(".post-text"),
           liPostImg: document.querySelector(".post-img"),
           liPostBtn: document.querySelector(".post-btn"),
+          colorChoices: document.querySelectorAll(".color-choice"),
         };
 
         const config = {
@@ -1147,6 +1229,21 @@
             helpers.changeState("isShareOnLinkedInClicked", false);
             elements.liPostBtn.removeAttribute("disabled");
             ui.hideModal();
+          });
+
+          elements.colorChoices.forEach((colorChoice) => {
+            colorChoice.addEventListener("click", (e) => {
+              const color = colorChoice.classList[0];
+
+              const root = document.documentElement;
+              const primary = getComputedStyle(root).getPropertyValue(`--${color}`).trim();
+              const secondary = getComputedStyle(root).getPropertyValue(`--${color}-light`).trim();
+              const overlay = getComputedStyle(root).getPropertyValue(`--${color}-overlay`).trim();
+
+              root.style.setProperty("--primary", primary);
+              root.style.setProperty("--secondary", secondary);
+              root.style.setProperty("--overlay", overlay);
+            });
           });
         }
 
