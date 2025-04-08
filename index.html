@@ -20,8 +20,15 @@
       }
 
       @font-face {
-        font-family: "Avenir";
+        font-family: "AvenirBlack";
         src: url("./fonts/avenir-font/AvenirLTStd-Black.otf") format("opentype");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "AvenirLight";
+        src: url("./fonts/avenir-font/AvenirLTStd-Medium.otf") format("opentype");
         font-weight: normal;
         font-style: normal;
       }
@@ -173,7 +180,11 @@
       .share-event a,
       .share-event button,
       .toast {
-        font-family: "Avenir", sans-serif;
+        font-family: "AvenirBlack", sans-serif;
+      }
+
+      select {
+        font-family: "AvenirLight", sans-serif;
       }
 
       .cropper-btn {
@@ -206,7 +217,7 @@
       }
 
       .share-event-date {
-        font-family: "Avenir", sans-serif;
+        font-family: "AvenirBlack", sans-serif;
       }
 
       .share-event p,
@@ -243,6 +254,12 @@
         height: 20px;
         border-radius: 50%;
         cursor: pointer;
+      }
+
+      .role-chooser > select {
+        border: 2px solid var(--primary);
+        border-radius: 20px;
+        padding: 5px 10px;
       }
 
       .orange {
@@ -495,6 +512,12 @@
         </div>
         <div class="role-chooser">
           <p>Choose your role at event:</p>
+          <select class="role-selector" name="role" id="role">
+            <option selected value="I'm Attending">I'm Attending</option>
+            <option value="I'm Participating">I'm Participating</option>
+            <option value="I'm Speaking At">I'm Speaking At</option>
+            <option value="I'm Sponsor Of">I'm Sponsor Of</option>
+          </select>
         </div>
         <div class="orientation-chooser">
           <p>Choose your orientation:</p>
@@ -568,7 +591,7 @@
         </div>
         <div class="share-event-details">
           <h3>
-            I am attending
+            <span class="role">Loading...</span>
             <br />
             <span class="share-event-name"> loading... </span>
             <br />
@@ -622,6 +645,8 @@
           liPostImg: document.querySelector(".post-img"),
           liPostBtn: document.querySelector(".post-btn"),
           colorChoices: document.querySelectorAll(".color-choice"),
+          roleSelector: document.querySelector(".role-selector"),
+          role: document.querySelector(".role"),
         };
 
         const config = {
@@ -645,6 +670,7 @@
           liShareText: null,
           isLoading: true,
           colorScheme: "orange",
+          role: "I'm Attending",
         };
 
         const helpers = {
@@ -1064,6 +1090,25 @@
 
             helpers.changeState("colorScheme", color);
           },
+
+          changeRole(role, changeSelected = false) {
+            elements.role.textContent = role;
+
+            helpers.changeState("role", role);
+
+            if (changeSelected) {
+              options = elements.roleSelector.options;
+
+              Array.from(options).forEach(option => {
+                if (option.text === role) {
+                  option.selected = true;
+                }
+                else {
+                  option.selected = false;
+                }
+              });
+            }
+          }
         };
 
         const api = {
@@ -1299,12 +1344,17 @@
               ui.changeColorScheme(color);
             });
           });
+
+          elements.roleSelector.addEventListener("change", () => {
+            ui.changeRole(elements.roleSelector.value);
+          });
         }
 
         async function init() {
           const isFound = helpers.getState();
           setupEventListeners();
           ui.changeColorScheme(state.colorScheme);
+          ui.changeRole(state.role, true);
 
           if (isFound && !state.isLoading) {
             ui.setupEventData(
