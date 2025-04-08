@@ -424,16 +424,21 @@
         flex: 1;
         position: relative;
         min-height: 275px;
+        min-width: 240px;
+      }
+
+      @media (width < 460px) {
+        .share-event-images {
+          min-width: none;
+        }
       }
 
       .share-event-background-image {
-        padding: 0 120px;
         border-radius: 25px;
         height: 100%;
         background-size: cover;
         background-position: center;
         position: absolute;
-        width: calc(100% - 240px);
       }
 
       .share-event-background-image > * {
