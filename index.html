@@ -71,7 +71,7 @@
       }
 
       svg rect {
-        fill: var(--primary);
+        stroke: var(--primary);
       }
 
       .toast {
@@ -256,12 +256,6 @@
         cursor: pointer;
       }
 
-      .role-chooser > select {
-        border: 2px solid var(--primary);
-        border-radius: 20px;
-        padding: 5px 10px;
-      }
-
       .orange {
         background-color: var(--orange);
       }
@@ -276,6 +270,16 @@
       }
       .yellow {
         background-color: var(--yellow);
+      }
+
+      .role-chooser > select {
+        border: 2px solid var(--primary);
+        border-radius: 20px;
+        padding: 5px 10px;
+      }
+
+      .orientation-chooser > svg {
+        cursor: pointer;
       }
 
       .share-event-header {
@@ -298,6 +302,13 @@
         width: fit-content;
         position: relative;
         flex-wrap: wrap-reverse;
+      }
+
+      .portrait {
+        flex-direction: column-reverse !important;
+      }
+      .landscape {
+        flex-direction: row;
       }
 
       .share-event-hover-content {
@@ -521,6 +532,15 @@
         </div>
         <div class="orientation-chooser">
           <p>Choose your orientation:</p>
+          <svg class="square" width="41" height="41" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="39" height="39" stroke="black" />
+          </svg>              
+          <svg class="portrait" width="41" height="67" viewBox="0 0 41 67" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="40.5" y="0.5" width="66" height="40" transform="rotate(90 40.5 0.5)" stroke="black"/>
+          </svg>              
+          <svg class="landscape" width="67" height="41" viewBox="0 0 67 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0.5" y="0.5" width="66" height="40" stroke="black"/>
+          </svg>              
         </div>
       </div>
       <div class="share-event-header">
@@ -635,6 +655,7 @@
           eventContent: document.getElementById("eventContent"),
           shareEventName: document.querySelector(".share-event-name"),
           shareEventDate: document.querySelector(".share-event-date"),
+          shareEventContent: document.querySelector(".share-event-content"),
           participantName: document.querySelector(
             ".event-share-participant-name"
           ),
@@ -647,6 +668,7 @@
           colorChoices: document.querySelectorAll(".color-choice"),
           roleSelector: document.querySelector(".role-selector"),
           role: document.querySelector(".role"),
+          orientationChooser: document.querySelector(".orientation-chooser"),
         };
 
         const config = {
@@ -671,6 +693,7 @@
           isLoading: true,
           colorScheme: "orange",
           role: "I'm Attending",
+          orientation: "landscape",
         };
 
         const helpers = {
@@ -1108,7 +1131,18 @@
                 }
               });
             }
-          }
+          },
+
+          changeOrientation (orientation) {
+            if (elements.shareEventContent.classList.length > 1) {
+              const keep = elements.shareEventContent.classList[0];
+              elements.shareEventContent.className = keep;
+            }
+
+            elements.shareEventContent.classList.add(orientation);
+            
+            helpers.changeState("orientation", orientation);
+          },
         };
 
         const api = {
@@ -1348,6 +1382,12 @@
           elements.roleSelector.addEventListener("change", () => {
             ui.changeRole(elements.roleSelector.value);
           });
+
+          elements.orientationChooser.addEventListener(("click"), (e) => {
+            const orientation = e.target.classList[0];
+
+            ui.changeOrientation(orientation);
+          })
         }
 
         async function init() {
@@ -1355,6 +1395,7 @@
           setupEventListeners();
           ui.changeColorScheme(state.colorScheme);
           ui.changeRole(state.role, true);
+          ui.changeOrientation(state.orientation);
 
           if (isFound && !state.isLoading) {
             ui.setupEventData(
