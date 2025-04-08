@@ -61,9 +61,9 @@
         --secondary: var(--orange-light);
         --overlay: var(--orange-overlay);
 
-        --portrait: 500px;
+        --portrait: 450px;
         --landscape: 740px;
-        --square: 500px;
+        --square: 650px;
 
         --max-width: var(--landscape);
       }
@@ -319,7 +319,7 @@
         flex-direction: row;
       }
       .square {
-        aspect-ratio: 1/1;
+        flex-direction: column-reverse;
       }
 
       .share-event-hover-content {
@@ -415,6 +415,14 @@
         margin: 20px 0 20px 20px;
       }
 
+      .share-event-details > h3,
+      .share-event-details > span {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+        padding: 10px;
+      }
+
       .share-event-name {
         font-size: 40px;
         line-height: 1.5;
@@ -434,7 +442,7 @@
 
       @media (width < 460px) {
         .share-event-images {
-          min-width: none;
+          min-width: 0;
         }
       }
 
@@ -637,7 +645,7 @@
           <h3>
             <span class="role">Loading...</span>
             <br />
-            <span class="share-event-name"> loading... </span>
+            <span class="share-event-name">Loading...</span>
             <br />
             <span class="share-event-date">Loading...</span>
           </h3>
