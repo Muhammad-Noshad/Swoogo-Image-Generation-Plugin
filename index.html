@@ -60,6 +60,12 @@
         --primary: var(--orange);
         --secondary: var(--orange-light);
         --overlay: var(--orange-overlay);
+
+        --portrait: 500px;
+        --landscape: 740px;
+        --square: 0px;
+
+        --max-width: var(--landscape);
       }
 
       svg path {
@@ -173,6 +179,7 @@
       .share-event * {
         margin: 0;
         padding: 0;
+        max-width: var(--max-width);
       }
 
       .share-event p,
@@ -305,11 +312,9 @@
 
       .portrait {
         flex-direction: column-reverse;
-        max-width: 500px;
       }
       .landscape {
         flex-direction: row;
-        max-width: 740px;
       }
 
       .share-event-hover-content {
@@ -1141,6 +1146,13 @@
             }
 
             elements.shareEventContent.classList.add(orientation);
+
+            const root = document.documentElement;
+            const width = getComputedStyle(root)
+              .getPropertyValue(`--${orientation}`)
+              .trim();
+
+            root.style.setProperty("--max-width", width);
             
             helpers.changeState("orientation", orientation);
           },
