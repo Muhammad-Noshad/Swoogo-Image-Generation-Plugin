@@ -1487,6 +1487,10 @@
           window.addEventListener("resize", helpers.handleShareEventContentWrap());
 
           window.addEventListener("load", helpers.handleShareEventContentWrap());
+
+          window.addEventListener("focusin", helpers.handleShareEventContentWrap());
+
+          window.addEventListener("focusout", helpers.handleShareEventContentWrap());
         }
 
         async function init() {
@@ -1508,6 +1512,8 @@
             if (state.isShareOnLinkedInClicked) {
               helpers.createLinkedInPost();
             }
+
+            helpers.handleShareEventContentWrap();
 
             return;
           } else {
@@ -1559,6 +1565,7 @@
           );
 
           ui.setupEventData(event, registrantDetails, registrantProfilePicture);
+          helpers.handleShareEventContentWrap();
         }
 
         init();
