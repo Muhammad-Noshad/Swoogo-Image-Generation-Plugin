@@ -663,9 +663,10 @@
           <h3>
             <span class="role">Loading...</span>
             <br />
-            <span class="share-event-name">Loading...</span>
+            <span class="share-event-name">Protect your breakthoughs 
+              by mastering ip in biotech </span>
             <br />
-            <span class="share-event-date">Loading...</span>
+            <span class="share-event-date">Thursday ivndsn vsn</span>
           </h3>
           <div class="share-event-logo">
             <img src="./images/logo.svg" alt="logo">
@@ -964,7 +965,7 @@
 
           handleShareEventContentWrap () {
             const orientation = elements.shareEventContent.classList[1];
-            console.log(orientation);
+
             if (orientation !== "landscape") {
               return;
             }
@@ -978,11 +979,9 @@
               .trim();
 
             if (helpers.hasFlexWrapped(elements.shareEventContent)) {
-              console.log("Wrapped");
               root.style.setProperty("--share-event-details-top-pad", portraitTopPad);
             }
             else {
-              console.log("Not wrapped");
               root.style.setProperty("--share-event-details-top-pad", landscapeTopPad);
             }
           }
@@ -1486,13 +1485,13 @@
             ui.changeOrientation(orientation);
           });
 
-          window.addEventListener("resize", helpers.handleShareEventContentWrap());
+          window.addEventListener("resize", helpers.handleShareEventContentWrap);
 
-          window.addEventListener("load", helpers.handleShareEventContentWrap());
+          window.addEventListener("load", helpers.handleShareEventContentWrap);
 
-          window.addEventListener("focusin", helpers.handleShareEventContentWrap());
+          window.addEventListener("focusin", helpers.handleShareEventContentWrap);
 
-          window.addEventListener("focusout", helpers.handleShareEventContentWrap());
+          window.addEventListener("focusout", helpers.handleShareEventContentWrap);
         }
 
         async function init() {
