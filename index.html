@@ -485,15 +485,18 @@
       .share-event-background-image {
         border-radius: 25px;
         height: 100%;
-        background-size: cover;
-        background-position: center;
-        position: absolute;
+        /* background-size: cover; */
+        /* background-position: center; */
+        /* position: absolute; */
         width: 100%;
+        position: relative;
       }
 
-      .share-event-background-image::before {
+      .bg-img {
         content: "";
-        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
         height: 100%;
         width: 100%;
         background-image: var(--bg-img);
@@ -501,6 +504,7 @@
         background-position: center;
         filter: blur(1.5px);
         border-radius: 25px;
+        z-index: 0 !important;
       }
 
       .share-event-background-image > * {
@@ -733,6 +737,7 @@
           <div class="share-event-images">
             <div class="overlay"></div>
             <div class="share-event-background-image">
+              <div class="bg-img"></div>
               <div class="profile-hover-overlay">
                 <p>Remove</p>
               </div>
