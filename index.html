@@ -40,7 +40,7 @@
 
         --orange: #ff6000;
         --orange-light: #ffdad4;
-        --orange-overlay: #ff600099;
+        --orange-overlay: #FF600099;
 
         --pink: #eb338d;
         --pink-light: #f9bed0;
@@ -62,16 +62,11 @@
         --secondary: var(--orange-light);
         --overlay: var(--orange-overlay);
 
-        --portrait: 450px;
-        --landscape: 740px;
-        --square: 650px;
-
-        --portrait-top-pad: 40px;
-        --landscape-top-pad: 140px;
-        --square-top-pad: 40px;
+        --portrait: 550px;
+        --landscape: 1100px;
+        --square: 825px;
 
         --max-width: var(--landscape);
-        --share-event-details-top-pad: var(--landscape-top-pad);
       }
 
       svg path {
@@ -310,6 +305,12 @@
         cursor: pointer;
       }
 
+      .svg-square rect,
+      .svg-landscape rect,
+      .svg-portrait rect {
+        stroke: #000000 !important;
+      }
+
       .share-event-header {
         display: flex;
         align-items: center;
@@ -405,7 +406,7 @@
         color: #000000;
       }
       .small {
-        font-size: 12px !important;
+        font-size: 14px !important;
       }
       .bold {
         font-weight: 800 !important;
@@ -432,7 +433,7 @@
 
       .share-event-details {
         flex: 2;
-        padding-top: var(--share-event-details-top-pad);
+        padding: 30px 10px 0px 20px;
       }
 
       .share-event-details > h3,
@@ -459,10 +460,10 @@
       }
 
       .share-event-images {
-        flex: 2;
+        flex: 1;
         position: relative;
-        min-height: 275px;
-        min-width: 240px;
+        min-height: 350px;
+        min-width: 350px;
       }
 
       @media (width < 460px) {
@@ -486,8 +487,8 @@
 
       .share-event-profile-image {
         border-radius: 50%;
-        width: 150px;
-        height: 150px;
+        width: 200px;
+        height: 200px;
         position: absolute;
         left: 50%;
         top: 50%;
@@ -519,8 +520,8 @@
       }
 
       .no-image-placeholder {
-        width: 150px;
-        height: 150px;
+        width: 200px;
+        height: 200px;
         border-radius: 50%;
         background-color: #d9d9d9;
         display: flex;
@@ -591,7 +592,7 @@
           <div class="orientation-chooser">
             <p>Choose your orientation:</p>
             <svg
-              class="square"
+              class="svg-square"
               width="41"
               height="41"
               viewBox="0 0 41 41"
@@ -601,7 +602,7 @@
               <rect x="1" y="1" width="39" height="39" stroke="black" />
             </svg>
             <svg
-              class="portrait"
+              class="svg-portrait"
               width="41"
               height="67"
               viewBox="0 0 41 67"
@@ -618,7 +619,7 @@
               />
             </svg>
             <svg
-              class="landscape"
+              class="svg-landscape"
               width="67"
               height="41"
               viewBox="0 0 67 41"
@@ -699,9 +700,9 @@
             <h3>
               <span class="role">Loading...</span>
               <br />
-              <span class="share-event-name">Loading...</span>
+              <span class="share-event-name">Protect your breakthroughs by mastering IP in biotech</span>
               <br />
-              <span class="share-event-date">Loading...</span>
+              <span class="share-event-date">Thursday, April 10, 2025</span>
             </h3>
             <div class="share-event-logo">
               <img src="./images/logo.svg" alt="logo" />
@@ -990,42 +991,6 @@
 
             helpers.createLinkedInPost();
           },
-
-          hasFlexWrapped(container) {
-            const children = Array.from(container.children);
-            if (children.length < 2) return false;
-
-            const firstTop = children[0].offsetTop;
-            return children.some((child) => child.offsetTop !== firstTop);
-          },
-
-          handleShareEventContentWrap() {
-            const orientation = elements.shareEventContent.classList[1];
-
-            if (orientation !== "landscape") {
-              return;
-            }
-
-            const root = document.documentElement;
-            const landscapeTopPad = getComputedStyle(root)
-              .getPropertyValue(`--${orientation}-top-pad`)
-              .trim();
-            const portraitTopPad = getComputedStyle(root)
-              .getPropertyValue(`--portrait-top-pad`)
-              .trim();
-
-            if (helpers.hasFlexWrapped(elements.shareEventContent)) {
-              root.style.setProperty(
-                "--share-event-details-top-pad",
-                portraitTopPad
-              );
-            } else {
-              root.style.setProperty(
-                "--share-event-details-top-pad",
-                landscapeTopPad
-              );
-            }
-          },
         };
 
         const ui = {
@@ -1270,12 +1235,8 @@
             const width = getComputedStyle(root)
               .getPropertyValue(`--${orientation}`)
               .trim();
-            const topPad = getComputedStyle(root)
-              .getPropertyValue(`--${orientation}-top-pad`)
-              .trim();
 
             root.style.setProperty("--max-width", width);
-            root.style.setProperty("--share-event-details-top-pad", topPad);
 
             helpers.changeState("orientation", orientation);
           },
@@ -1520,27 +1481,10 @@
           });
 
           elements.orientationChooser.addEventListener("click", (e) => {
-            const orientation = e.target.classList[0];
+            const orientation = e.target.classList[0].split("-")[1];
 
             ui.changeOrientation(orientation);
           });
-
-          window.addEventListener(
-            "resize",
-            helpers.handleShareEventContentWrap
-          );
-
-          window.addEventListener("load", helpers.handleShareEventContentWrap);
-
-          window.addEventListener(
-            "focusin",
-            helpers.handleShareEventContentWrap
-          );
-
-          window.addEventListener(
-            "focusout",
-            helpers.handleShareEventContentWrap
-          );
         }
 
         async function init() {
@@ -1562,8 +1506,6 @@
             if (state.isShareOnLinkedInClicked) {
               helpers.createLinkedInPost();
             }
-
-            helpers.handleShareEventContentWrap();
 
             return;
           } else {
@@ -1615,7 +1557,6 @@
           );
 
           ui.setupEventData(event, registrantDetails, registrantProfilePicture);
-          helpers.handleShareEventContentWrap();
         }
 
         init();
