@@ -67,6 +67,8 @@
         --square: 825px;
 
         --max-width: var(--landscape);
+
+        --bg-img: none;
       }
 
       svg path {
@@ -481,6 +483,18 @@
         width: 100%;
       }
 
+      .share-event-background-image::before {
+        content: "";
+        display: block;
+        height: 100%;
+        width: 100%;
+        background-image: var(--bg-img);
+        background-size: cover;
+        background-position: center;
+        filter: blur(1.5px);
+        border-radius: 25px;
+      }
+
       .share-event-background-image > * {
         z-index: 1;
       }
@@ -700,9 +714,9 @@
             <h3>
               <span class="role">Loading...</span>
               <br />
-              <span class="share-event-name">Protect your breakthroughs by mastering IP in biotech</span>
+              <span class="share-event-name">Loading...</span>
               <br />
-              <span class="share-event-date">Thursday, April 10, 2025</span>
+              <span class="share-event-date">Loading...</span>
             </h3>
             <div class="share-event-logo">
               <img src="./images/logo.svg" alt="logo" />
@@ -1146,7 +1160,8 @@
             elements.shareEventDate.textContent = helpers.formatDate(
               event.start_date
             );
-            elements.profileContainer.style.backgroundImage = `url('${event.c_96753}')`;
+            const root = document.documentElement;
+            root.style.setProperty("--bg-img", `url('${event.c_96753}')`);
 
             elements.participantName.textContent = `${registrantDetails.first_name} ${registrantDetails.last_name}`;
 
