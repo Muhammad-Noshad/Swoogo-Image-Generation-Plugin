@@ -446,8 +446,13 @@
         padding: 30px 10px 0px 20px;
       }
 
-      .share-event-details > h3,
-      .share-event-details > span {
+      @media (width < 450px) {
+        .share-event-details > h3 {
+          word-break: break-all;
+        }
+      }
+
+      .share-event-details > h3 {
         word-wrap: break-word;
         overflow-wrap: break-word;
         hyphens: auto;
