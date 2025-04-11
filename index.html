@@ -75,6 +75,12 @@
         --participant-name-bottom-landscape: 15%;
 
         --participant-name-bottom: var(--participant-name-bottom-15);
+
+        --share-event-details-padding-landscape: 90px 10px 20px 20px;
+        --share-event-details-padding-portrait: 20px 10px 20px 20px;
+        --share-event-details-padding-square: 20px 10px 20px 20px;
+
+        --share-event-details-padding: var(--share-event-details-padding-landscape);
       }
 
       svg path {
@@ -449,7 +455,7 @@
 
       .share-event-details {
         flex: 2;
-        padding: 20px 10px 20px 20px;
+        padding: var(--share-event-details-padding);
       }
 
       @media (width < 450px) {
@@ -466,7 +472,7 @@
       }
 
       .share-event-name {
-        font-size: 30px;
+        font-size: 25px;
         line-height: 1.4;
       }
 
@@ -1270,9 +1276,13 @@
             const bottom = getComputedStyle(root)
               .getPropertyValue(`--participant-name-bottom-${orientation}`)
               .trim();
+            const topPadding = getComputedStyle(root)
+              .getPropertyValue(`--share-event-details-padding-${orientation}`)
+              .trim();
 
             root.style.setProperty("--max-width", width);
             root.style.setProperty("--participant-name-bottom", bottom);
+            root.style.setProperty("--share-event-details-padding", topPadding);
 
             helpers.changeState("orientation", orientation);
           },
