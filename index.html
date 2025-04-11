@@ -69,6 +69,12 @@
         --max-width: var(--landscape);
 
         --bg-img: none;
+
+        --participant-name-bottom-portrait: 10%;
+        --participant-name-bottom-square: 10%;
+        --participant-name-bottom-landscape: 15%;
+
+        --participant-name-bottom: var(--participant-name-bottom-15);
       }
 
       svg path {
@@ -572,9 +578,8 @@
 
       .event-share-participant-name {
         position: absolute;
-        left: 50%;
-        top: 90%;
-        transform: translate(-50%, -75%);
+        left: 0;
+        bottom: var(--participant-name-bottom);
         width: 100%;
         text-align: center;
         color: #ffffff;
@@ -1262,8 +1267,12 @@
             const width = getComputedStyle(root)
               .getPropertyValue(`--${orientation}`)
               .trim();
+            const bottom = getComputedStyle(root)
+              .getPropertyValue(`--participant-name-bottom-${orientation}`)
+              .trim();
 
             root.style.setProperty("--max-width", width);
+            root.style.setProperty("--participant-name-bottom", bottom);
 
             helpers.changeState("orientation", orientation);
           },
