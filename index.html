@@ -80,7 +80,9 @@
         --share-event-details-padding-portrait: 20px 10px 20px 20px;
         --share-event-details-padding-square: 20px 10px 20px 20px;
 
-        --share-event-details-padding: var(--share-event-details-padding-landscape);
+        --share-event-details-padding: var(
+          --share-event-details-padding-landscape
+        );
       }
 
       svg path {
@@ -1111,12 +1113,14 @@
             const profileImage = document.querySelector(
               ".share-event-profile-image"
             );
+            const overlay = document.querySelector(".overlay");
 
             const originalStates = {
               hoverContent: hoverContent.style.display,
               noImagePlaceholder: noImagePlaceholder
                 ? noImagePlaceholder.style.display
                 : null,
+              overlay: overlay.style.display,
             };
 
             let profileImageParent = null;
@@ -1124,7 +1128,10 @@
             let removedProfileImage = false;
 
             hoverContent.style.display = "none";
-            if (noImagePlaceholder) noImagePlaceholder.style.display = "none";
+            if (noImagePlaceholder)  {
+              noImagePlaceholder.style.display = "none";
+              overlay.style.display = "none";
+            }
 
             if (profileImage) {
               const src = profileImage.getAttribute("src");
@@ -1164,6 +1171,7 @@
               if (noImagePlaceholder) {
                 noImagePlaceholder.style.display =
                   originalStates.noImagePlaceholder;
+                overlay.style.display = originalStates.overlay;
               }
 
               if (removedProfileImage && profileImageParent) {
