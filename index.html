@@ -63,7 +63,7 @@
         --overlay: var(--orange-overlay);
 
         --portrait: 500px;
-        --landscape: 700px;
+        --landscape: 1100px; /* 700 */
         --square: 600px;
 
         --max-width: var(--landscape);
@@ -326,14 +326,28 @@
         padding: 5px 10px;
       }
 
-      .orientation-chooser > svg {
+      .orientation-chooser > * {
         cursor: pointer;
       }
 
-      .svg-square rect,
-      .svg-landscape rect,
-      .svg-portrait rect {
-        stroke: #000000 !important;
+      .square-option,
+      .landscape-option,
+      .portrait-option {
+        border: 2px solid #000000;
+        border-radius: 5px;
+      }
+      .square-option {
+        width: 24px;
+        height: 24px;
+      }
+      .landscape-option {
+        width: 40px;
+        height: 24px;
+      }
+      .portrait-option {
+        width: 24px;
+        height: 36px;
+        margin-bottom: auto;
       }
 
       .share-event-header {
@@ -628,7 +642,10 @@
         </div>
         <div class="orientation-chooser">
           <p>Choose your orientation:</p>
-          <svg
+          <div class="square-option"></div>
+          <div class="landscape-option"></div>
+          <div class="portrait-option"></div>
+          <!-- <svg
             class="svg-square"
             width="41"
             height="41"
@@ -664,7 +681,7 @@
             xmlns="http://www.w3.org/2000/svg"
           >
             <rect x="0.5" y="0.5" width="66" height="40" stroke="black" />
-          </svg>
+          </svg> -->
         </div>
       </div>
       <section class="share-event">
@@ -1517,7 +1534,7 @@
           });
 
           elements.orientationChooser.addEventListener("click", (e) => {
-            const orientation = e.target.classList[0].split("-")[1];
+            const orientation = e.target.classList[0].split("-")[0];
 
             ui.changeOrientation(orientation);
           });
