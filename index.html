@@ -330,6 +330,10 @@
         cursor: pointer;
       }
 
+      .orientation-chooser > .selected {
+        border: 3px solid #000000;
+      }
+
       .square-option,
       .landscape-option,
       .portrait-option {
@@ -642,46 +646,9 @@
         </div>
         <div class="orientation-chooser">
           <p>Choose your orientation:</p>
-          <div class="square-option"></div>
+          <div class="square-option selected"></div>
           <div class="landscape-option"></div>
           <div class="portrait-option"></div>
-          <!-- <svg
-            class="svg-square"
-            width="41"
-            height="41"
-            viewBox="0 0 41 41"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect x="1" y="1" width="39" height="39" stroke="black" />
-          </svg>
-          <svg
-            class="svg-portrait"
-            width="41"
-            height="67"
-            viewBox="0 0 41 67"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect
-              x="40.5"
-              y="0.5"
-              width="66"
-              height="40"
-              transform="rotate(90 40.5 0.5)"
-              stroke="black"
-            />
-          </svg>
-          <svg
-            class="svg-landscape"
-            width="67"
-            height="41"
-            viewBox="0 0 67 41"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect x="0.5" y="0.5" width="66" height="40" stroke="black" />
-          </svg> -->
         </div>
       </div>
       <section class="share-event">
@@ -825,7 +792,7 @@
           isLoading: true,
           colorScheme: "orange",
           role: "I'm attending",
-          orientation: "landscape",
+          orientation: "square",
         };
 
         const helpers = {
@@ -1535,6 +1502,18 @@
 
           elements.orientationChooser.addEventListener("click", (e) => {
             const orientation = e.target.classList[0].split("-")[0];
+
+            const children = Array.from(elements.orientationChooser.children);
+            children.shift();
+
+            children.forEach((child) => {
+              if (child.classList[0].split("-")[0] === orientation) {
+                child.classList.add("selected");
+              }
+              else {
+                child.classList.remove("selected");
+              }
+            });
 
             ui.changeOrientation(orientation);
           });
