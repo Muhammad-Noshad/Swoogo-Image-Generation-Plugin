@@ -1086,6 +1086,7 @@
                 target.classList.contains("without-image") ||
                 target.closest(".without-image")
               ) {
+                document.querySelector(".overlay").remove();
                 noImageDiv.remove();
               }
             });
