@@ -1025,8 +1025,9 @@
 
           createThankYouContent() {
             const thankYouDiv = document.createElement("div");
+                        
             thankYouDiv.className =
-              "share-event-content landscape thank-you-content";
+              `share-event-content ${state.orientation} thank-you-content`;
             thankYouDiv.style.padding = "40px";
             thankYouDiv.style.display = "flex";
             thankYouDiv.style.flexDirection = "column";
