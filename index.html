@@ -986,6 +986,18 @@
             root.style.setProperty("--participant-name-bottom", bottom);
             root.style.setProperty("--share-event-details-padding", topPadding);
 
+            const children = Array.from(elements.orientationChooser.children);
+            children.shift();
+
+            children.forEach((child) => {
+              if (child.classList[0].split("-")[0] === orientation) {
+                child.classList.add("selected");
+              }
+              else {
+                child.classList.remove("selected");
+              }
+            });
+
             helpers.changeState("orientation", orientation);
           },
         };
@@ -1102,18 +1114,6 @@
 
           elements.orientationChooser.addEventListener("click", (e) => {
             const orientation = e.target.classList[0].split("-")[0];
-
-            const children = Array.from(elements.orientationChooser.children);
-            children.shift();
-
-            children.forEach((child) => {
-              if (child.classList[0].split("-")[0] === orientation) {
-                child.classList.add("selected");
-              }
-              else {
-                child.classList.remove("selected");
-              }
-            });
 
             ui.changeOrientation(orientation);
           });
