@@ -302,10 +302,6 @@
         flex-wrap: wrap;
       }
 
-      .share-event-header > h3 {
-        
-      }
-
       .share-event-header > .icon {
         cursor: pointer;
       }
@@ -988,6 +984,7 @@
           },
 
           changeOrientation(orientation) {
+            console.log("Orient", orientation);
             if (elements.shareEventContent.classList.length > 1) {
               const keep = elements.shareEventContent.classList[0];
               elements.shareEventContent.className = keep;
