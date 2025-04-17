@@ -386,35 +386,6 @@
         flex-direction: column-reverse;
       }
 
-      .share-event-hover-content {
-        border-radius: 25px;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        font-weight: 800;
-        z-index: 2;
-        background: #00000099;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 20px;
-      }
-
-      .share-event-hover-content > .download-section > a {
-        font-size: 20px;
-      }
-
-      .share-event-content:has(.share-event-details:hover)
-        .share-event-hover-content,
-      .share-event-hover-content:hover {
-        opacity: 1;
-        visibility: visible;
-      }
-
       .images-section {
         display: flex;
         gap: 40px;
@@ -683,27 +654,6 @@
           </div>
         </div>
         <div class="share-event-content landscape" id="eventContent">
-          <div class="share-event-hover-content">
-            <div class="images-section">
-              <img
-                src="./images/linkindin.svg"
-                id="linkedin-img"
-                alt="linkedin-img"
-              />
-              <img src="./images/instagram.svg" alt="instagram-img" />
-              <img src="./images/twitter.svg" alt="twitter-img" />
-              <img src="./images/whatsapp.svg" alt="whatsapp-img" />
-            </div>
-            <div class="divider-section">
-              <div class="white-divider"></div>
-              <p class="white small">or</p>
-              <div class="white-divider"></div>
-            </div>
-            <div class="download-section">
-              <img src="./images/small-download-icon.svg" alt="" />
-              <a class="white" id="downloadImageBtn">Download Image</a>
-            </div>
-          </div>
           <div class="share-event-details">
             <h3>
               <span class="role">Loading...</span>
@@ -1073,9 +1023,6 @@
           },
 
           async downloadEventAsImage(returnDataUrl = false) {
-            const hoverContent = document.querySelector(
-              ".share-event-hover-content"
-            );
             const noImagePlaceholder = document.querySelector(
               ".no-image-placeholder"
             );
@@ -1085,7 +1032,6 @@
             const overlay = document.querySelector(".overlay");
 
             const originalStates = {
-              hoverContent: hoverContent.style.display,
               noImagePlaceholder: noImagePlaceholder
                 ? noImagePlaceholder.style.display
                 : null,
@@ -1096,7 +1042,6 @@
             let profileImageNextSibling = null;
             let removedProfileImage = false;
 
-            hoverContent.style.display = "none";
             if (noImagePlaceholder)  {
               noImagePlaceholder.style.display = "none";
               overlay.style.display = "none";
@@ -1136,7 +1081,6 @@
               );
               throw error;
             } finally {
-              hoverContent.style.display = originalStates.hoverContent;
               if (noImagePlaceholder) {
                 noImagePlaceholder.style.display =
                   originalStates.noImagePlaceholder;
