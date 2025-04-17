@@ -701,7 +701,6 @@
           fileInput: document.getElementById("profileImageInput"),
           hoverOverlay: document.querySelector(".profile-hover-overlay"),
           downloadBtn: document.getElementById("downloadBtn"),
-          downloadImageBtn: document.getElementById("downloadImageBtn"),
           eventContent: document.getElementById("eventContent"),
           shareEventName: document.querySelector(".share-event-name"),
           shareEventDate: document.querySelector(".share-event-date"),
@@ -1333,11 +1332,6 @@
             ui.downloadEventAsImage();
           });
 
-          elements.downloadImageBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            ui.downloadEventAsImage();
-          });
-
           elements.fileInput.addEventListener("change", (event) => {
             const file = event.target.files[0];
             if (file) {
@@ -1374,36 +1368,6 @@
           });
 
           elements.hoverOverlay.addEventListener("click", ui.showUploadOption);
-
-          const socialIcons = {
-            linkedin: document.querySelector(
-              '.images-section img[alt="linkedin-img"]'
-            ),
-            twitter: document.querySelector(
-              '.images-section img[alt="twitter-img"]'
-            ),
-            instagram: document.querySelector(
-              '.images-section img[alt="instagram-img"]'
-            ),
-            whatsapp: document.querySelector(
-              '.images-section img[alt="whatsapp-img"]'
-            ),
-          };
-
-          Object.entries(socialIcons).forEach(([platform, icon]) => {
-            if (platform === "linkedin") return;
-
-            if (icon) {
-              icon.addEventListener("click", (e) => {
-                e.preventDefault();
-                helpers.shareToSocialMedia(platform);
-              });
-            }
-          });
-
-          socialIcons.linkedin.addEventListener("click", (e) => {
-            helpers.shareOnLinkedIn(e);
-          });
 
           elements.liPostCloseBtn.addEventListener("click", () => {
             document.getElementById("postModal").style.display = "none";
