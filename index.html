@@ -984,7 +984,12 @@
           },
 
           changeOrientation(orientation) {
-            console.log("Orient", orientation);
+            const availableOrientations = ["landscape", "portrait", "square"];
+
+            if (!availableOrientations.includes(orientation)) {
+              return;
+            }
+
             if (elements.shareEventContent.classList.length > 1) {
               const keep = elements.shareEventContent.classList[0];
               elements.shareEventContent.className = keep;
