@@ -832,7 +832,7 @@
               noImagePlaceholder: noImagePlaceholder
                 ? noImagePlaceholder.style.display
                 : null,
-              overlay: overlay?.style?.display,
+              overlay: overlay.style.display,
             };
 
             let profileImageParent = null;
@@ -841,7 +841,7 @@
 
             if (noImagePlaceholder)  {
               noImagePlaceholder.style.display = "none";
-              overlay?.style.display = "none";
+              overlay.style.display = "none";
             }
 
             if (profileImage) {
@@ -881,7 +881,7 @@
               if (noImagePlaceholder) {
                 noImagePlaceholder.style.display =
                   originalStates.noImagePlaceholder;
-                overlay?.style.display = originalStates.overlay;
+                overlay.style.display = originalStates.overlay;
               }
 
               if (removedProfileImage && profileImageParent) {
