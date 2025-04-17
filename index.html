@@ -1028,6 +1028,7 @@
                         
             thankYouDiv.className =
               `share-event-content ${state.orientation} thank-you-content`;
+            thankYouDiv.style.boxSizing = "border-box";
             thankYouDiv.style.width = "100%";
             thankYouDiv.style.padding = "40px";
             thankYouDiv.style.display = "flex";
@@ -1120,7 +1121,7 @@
         function setupEventListeners() {
           elements.downloadBtn.addEventListener("click", async (e) => {
             e.preventDefault();
-            await ui.downloadEventAsImage();
+            // await ui.downloadEventAsImage();
 
             const originalContent = elements.eventContent;
             const originalDisplay = originalContent.style.display;
