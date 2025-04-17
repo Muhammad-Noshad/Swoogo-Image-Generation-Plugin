@@ -855,9 +855,22 @@
             }
 
             try {
-              const dataUrl = await domtoimage.toPng(elements.eventContent, {
-                quality: 1,
-              });
+              const scale = 3;
+
+              const style = {
+                transform: `scale(${scale})`,
+                transformOrigin: 'top left',
+                width: elements.eventContent.offsetWidth + 'px',
+                height: elements.eventContent.offsetHeight + 'px',
+              };
+
+              const param = {
+                width: elements.eventContent.offsetWidth * scale,
+                height: elements.eventContent.offsetHeight * scale,
+                style: style,
+              };
+
+              const dataUrl = await domtoimage.toPng(elements.eventContent, param);
 
               const link = document.createElement("a");
               link.download =
