@@ -1118,6 +1118,7 @@
         function setupEventListeners() {
           elements.downloadBtn.addEventListener("click", async (e) => {
             e.preventDefault();
+            await ui.downloadEventAsImage();
 
             const originalContent = elements.eventContent;
             const originalDisplay = originalContent.style.display;
@@ -1143,8 +1144,6 @@
             setTimeout(() => {
               thankYouContent.style.opacity = "1";
             }, 50);
-
-            await ui.downloadEventAsImage();
 
             await new Promise((resolve) => setTimeout(resolve, 2000));
 
