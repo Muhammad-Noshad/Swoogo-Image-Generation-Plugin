@@ -859,18 +859,13 @@
                 quality: 1,
               });
 
-              if (!returnDataUrl) {
-                const link = document.createElement("a");
-                link.download =
-                  removedProfileImage || !profileImage
-                    ? "event-without-profile.png"
-                    : "event-with-profile.png";
-                link.href = dataUrl;
-                link.click();
-              } else {
-                const response = await fetch(dataUrl);
-                return await response.blob();
-              }
+              const link = document.createElement("a");
+              link.download =
+                removedProfileImage || !profileImage
+                  ? "event-without-profile.png"
+                  : "event-with-profile.png";
+              link.href = dataUrl;
+              link.click();
             } catch (error) {
               console.error(
                 "An error occurred while generating the image:",
