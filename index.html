@@ -649,10 +649,8 @@
         };
 
         let state = {
-          hasProfileImage: false,
           event: null,
           registrantDetails: null,
-          registrantProfilePicture: null,
           swToken: null,
           isLoading: true,
           colorScheme: "orange",
@@ -709,8 +707,6 @@
               const croppedCanvas = cropper.getCroppedCanvas();
               if (croppedCanvas) {
                 const croppedImage = croppedCanvas.toDataURL();
-                helpers.changeState("registrantProfilePicture", croppedImage);
-                helpers.changeState("hasProfileImage", true);
                 ui.setProfileImage(croppedImage);
               }
               document.body.removeChild(cropperModal);
@@ -819,8 +815,6 @@
           showUploadOption() {
             elements.profileImage.style.display = "none";
             elements.hoverOverlay.style.display = "none";
-            helpers.changeState("hasProfileImage", false);
-            helpers.changeState("registrantProfilePicture", null);
 
             const existingPlaceholder = document.querySelector(
               ".no-image-placeholder"
@@ -860,7 +854,6 @@
           setProfileImage(imageUrl) {
             elements.profileImage.src = imageUrl;
             elements.profileImage.style.display = "block";
-            helpers.changeState("hasProfileImage", true);
 
             const placeholder = document.querySelector(".no-image-placeholder");
             if (placeholder) placeholder.remove();
@@ -973,7 +966,6 @@
 
             if (registrantProfilePicture) {
               ui.setProfileImage(registrantProfilePicture);
-              helpers.changeState("hasProfileImage", true);
             } else {
               ui.showUploadOption();
             }
@@ -1244,7 +1236,6 @@
             ui.setupEventData(
               state.event,
               state.registrantDetails,
-              state.registrantProfilePicture
             );
 
             return;
@@ -1288,11 +1279,6 @@
             "registrant",
             config.registrantId,
             "profile_picture"
-          );
-
-          helpers.changeState(
-            "registrantProfilePicture",
-            registrantProfilePicture
           );
 
           ui.setupEventData(event, registrantDetails, registrantProfilePicture);
