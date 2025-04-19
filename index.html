@@ -1176,6 +1176,7 @@
               const reader = new FileReader();
               reader.onload = (e) => helpers.openCropper(e.target.result);
               reader.readAsDataURL(file);
+              elements.fileInput.value = '';
             }
           });
 
