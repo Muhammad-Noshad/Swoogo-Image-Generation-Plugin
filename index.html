@@ -10,6 +10,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
     />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
       @font-face {
         font-family: "RigShaded";
@@ -587,7 +588,14 @@
             </div>
           </div>
           <div class="share-event-details">
-            <h3><span class="role" style="padding-left: 2px;">Loading...</span><br><span class="share-event-name">Loading...</span><br><span class="share-event-date" style="padding-left: 2px;">Loading...</span></h3>
+            <h3>
+              <span class="role" style="padding-left: 2px">Loading...</span
+              ><br /><span class="share-event-name">Loading...</span><br /><span
+                class="share-event-date"
+                style="padding-left: 2px"
+                >Loading...</span
+              >
+            </h3>
             <div class="share-event-logo">
               <img src="./images/logo.svg" alt="logo" />
             </div>
@@ -788,7 +796,7 @@
             setTimeout(() => {
               originalContent.style.opacity = "1";
             }, 50);
-          }
+          },
         };
 
         const ui = {
@@ -899,27 +907,63 @@
               }
             }
 
+            // try {
+            //   const scale = 2;
+
+            //   const style = {
+            //     transform: `scale(${scale})`,
+            //     transformOrigin: "top left",
+            //     width: elements.eventContent.offsetWidth + "px",
+            //     height: elements.eventContent.offsetHeight + "px",
+            //   };
+
+            //   const param = {
+            //     width: elements.eventContent.offsetWidth * scale,
+            //     height: elements.eventContent.offsetHeight * scale,
+            //     style: style,
+            //   };
+
+            //   const dataUrl = await domtoimage.toPng(
+            //     elements.eventContent,
+            //     param
+            //   );
+
+            //   const link = document.createElement("a");
+            //   link.download =
+            //     removedProfileImage || !profileImage
+            //       ? "event-without-profile.png"
+            //       : "event-with-profile.png";
+            //   link.href = dataUrl;
+            //   link.click();
+            // } catch (error) {
+            //   console.error(
+            //     "An error occurred while generating the image:",
+            //     error
+            //   );
+            //   throw error;
+            // }
             try {
               const scale = 2;
 
-              const style = {
-                transform: `scale(${scale})`,
-                transformOrigin: "top left",
-                width: elements.eventContent.offsetWidth + "px",
-                height: elements.eventContent.offsetHeight + "px",
+              // Create clone to avoid modifying the original
+              const original = elements.eventContent;
+
+              // Set up html2canvas options
+              const options = {
+                scale: scale,
+                useCORS: true, // Important for cross-origin images
+                allowTaint: true, // Allow cross-origin images to taint the canvas
+                backgroundColor: null, // Transparent background
+                logging: false, // Disable logging
               };
 
-              const param = {
-                width: elements.eventContent.offsetWidth * scale,
-                height: elements.eventContent.offsetHeight * scale,
-                style: style,
-              };
+              // Generate canvas from the element
+              const canvas = await html2canvas(original, options);
 
-              const dataUrl = await domtoimage.toPng(
-                elements.eventContent,
-                param
-              );
+              // Convert canvas to data URL
+              const dataUrl = canvas.toDataURL("image/png");
 
+              // Create download link
               const link = document.createElement("a");
               link.download =
                 removedProfileImage || !profileImage
@@ -1176,7 +1220,7 @@
               const reader = new FileReader();
               reader.onload = (e) => helpers.openCropper(e.target.result);
               reader.readAsDataURL(file);
-              elements.fileInput.value = '';
+              elements.fileInput.value = "";
             }
           });
 
@@ -1234,10 +1278,7 @@
           ui.changeOrientation(state.orientation);
 
           if (isFound && !state.isLoading) {
-            ui.setupEventData(
-              state.event,
-              state.registrantDetails,
-            );
+            ui.setupEventData(state.event, state.registrantDetails);
 
             return;
           } else {
