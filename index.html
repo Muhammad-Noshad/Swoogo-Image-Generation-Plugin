@@ -653,7 +653,8 @@
           orientationChooser: document.querySelector(".orientation-chooser"),
         };
 
-        console.log(document.querySelector("h2"));
+        const parentHeading = window.parent.document.querySelector('h2');
+        console.log(parentHeading.textContent);
 
         const config = {
           API_URL: "https://swoogo-image-generation-plugin-backend.vercel.app",
