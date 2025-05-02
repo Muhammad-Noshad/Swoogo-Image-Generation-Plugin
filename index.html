@@ -654,7 +654,11 @@
         };
         
         const params = new URLSearchParams(window.location.search);
-        console.log(params.get("event_id"));
+        const eventId = params.get("event_id");
+        const firstName = params.get("first_name");
+        const lastName = params.get("last_name");
+
+        console.log({ eventId, firstName, lastName });
 
         const config = {
           API_URL: "https://swoogo-image-generation-plugin-backend.vercel.app",
