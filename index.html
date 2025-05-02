@@ -652,6 +652,9 @@
           role: document.querySelector(".role"),
           orientationChooser: document.querySelector(".orientation-chooser"),
         };
+        
+        const params = new URLSearchParams(window.location.search);
+        console.log(params);
 
         const config = {
           API_URL: "https://swoogo-image-generation-plugin-backend.vercel.app",
