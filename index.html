@@ -663,7 +663,7 @@
         const config = {
           API_URL: "https://swoogo-image-generation-plugin-backend.vercel.app",
           clientId: "7712xqkqiwy7hu",
-          eventId: 250974,
+          eventId: eventId,
           registrantId: 51203732,
         };
 
@@ -1278,9 +1278,10 @@
             return;
           }
 
-          const registrantDetails = await api.getRegistrantDetailsById(
-            config.registrantId
-          );
+          const registrantDetails = {
+            first_name: firstName, 
+            last_name: lastName
+          }
           if (!registrantDetails) {
             ui.showUploadOption();
             return;
@@ -1288,13 +1289,7 @@
             helpers.changeState("registrantDetails", registrantDetails);
           }
 
-          const registrantProfilePicture = await api.getObjectAssetsByObjectId(
-            "registrant",
-            config.registrantId,
-            "profile_picture"
-          );
-
-          ui.setupEventData(event, registrantDetails, registrantProfilePicture);
+          ui.setupEventData(event, registrantDetails);
         }
 
         init();
